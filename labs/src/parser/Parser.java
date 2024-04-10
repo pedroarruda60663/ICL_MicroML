@@ -68,6 +68,15 @@ varDecls.add(varDecl);
     x = jj_consume_token(Id);
     jj_consume_token(EQ);
     e = BExp();
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case EL:{
+      jj_consume_token(EL);
+      break;
+      }
+    default:
+      jj_la1[3] = jj_gen;
+      ;
+    }
 {if ("" != null) return new ASTVarDecl(x.image, e);}
     throw new Error("Missing return statement in function");
 }
@@ -98,14 +107,14 @@ e1 = new ASTNot(e2);
         break;
         }
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[4] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
     }
 {if ("" != null) return e1;}
@@ -145,14 +154,14 @@ e1 = new ASTNotEquals(e1,e2);
         break;
         }
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       ;
     }
 {if ("" != null) return e1;}
@@ -178,14 +187,14 @@ e1 = new ASTSub(e1,e2);
         break;
         }
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[9] = jj_gen;
       ;
     }
 {if ("" != null) return e1;}
@@ -211,14 +220,14 @@ e1 = new ASTDiv(e1,e2);
         break;
         }
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
 {if ("" != null) return e1;}
@@ -261,7 +270,7 @@ e1 = new ASTDiv(e1,e2);
       break;
       }
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[12] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -277,13 +286,13 @@ e1 = new ASTDiv(e1,e2);
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[12];
+  final private int[] jj_la1 = new int[13];
   static private int[] jj_la1_0;
   static {
 	   jj_la1_init_0();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x10000,0x800,0x97210,0xe0000,0xe0000,0x1b00000,0x1b00000,0x60,0x60,0x180,0x180,0x93210,};
+	   jj_la1_0 = new int[] {0x10000,0x800,0x97210,0x800,0xe0000,0xe0000,0x1b00000,0x1b00000,0x60,0x60,0x180,0x180,0x93210,};
 	}
 
   /** Constructor with InputStream. */
@@ -297,7 +306,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -311,7 +320,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -321,7 +330,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -339,7 +348,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -348,7 +357,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -357,7 +366,7 @@ e1 = new ASTDiv(e1,e2);
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 12; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 13; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -413,7 +422,7 @@ e1 = new ASTDiv(e1,e2);
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 12; i++) {
+	 for (int i = 0; i < 13; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {

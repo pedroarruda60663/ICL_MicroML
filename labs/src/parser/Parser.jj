@@ -88,7 +88,7 @@ Exp decl() :
 ASTVarDecl assignment() :
 { Token x; Exp e; }
 {
-  x = <Id> <EQ> e = BExp() { return new ASTVarDecl(x.image, e); }
+  x = <Id> <EQ> e = BExp() [<EL>] { return new ASTVarDecl(x.image, e); }
 }
 
 Exp BExp() :
