@@ -112,7 +112,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 			localEnv.bind(decl.id, val);
 		}
 		Value result = e.body.accept(this, localEnv);
-		// No need to explicitly endScope() if we just discard localEnv here
+		// endScope() aqui?
 		return result;
 	}
 

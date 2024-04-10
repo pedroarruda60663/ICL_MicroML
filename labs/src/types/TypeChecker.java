@@ -114,7 +114,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             localEnv.bind(decl.id, type);
         }
         Type result = e.body.accept(this, localEnv);
-        // No need to explicitly endScope() if we just discard localEnv here
+        // endScope() aqui?
         return result;
     }
 
