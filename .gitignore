@@ -24,7 +24,6 @@ hs_err_pid*
 
 # Maven
 log/
-target/
 
 # Inclusions
 !lib/**
