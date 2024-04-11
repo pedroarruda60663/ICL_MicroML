@@ -50,6 +50,8 @@ TOKEN :
   |
   < ELSE: "else" >
   |
+  < END: "end" >
+  |
   < IN: "in" >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
@@ -104,7 +106,7 @@ ASTVarDecl assignment() :
 Exp IfElse() :
 { Exp e1, e2, e3; }
 {
-  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] <ELSE> [<EL>] e3 = Expr() { return new ASTIf(e1, e2, e3); }
+  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] <ELSE> [<EL>] e3 = Expr() [<EL>] <END> { return new ASTIf(e1, e2, e3); }
 }
 
 Exp BExp() :
