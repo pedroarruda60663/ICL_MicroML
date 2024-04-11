@@ -141,6 +141,18 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         return BoolType.getInstance();
     }
 
+    @Override
+    public Type visit(ASTIf e, Env<Type> env) throws TypingException {
+        ensureBoolType(e.cond.accept(this, env));
+        Type type1 = e.ifBody.accept(this, env);
+        Type type2 = e.elseBody.accept(this, env);
+        if (type1.equals(type2)) {
+            return type1;
+        } else {
+            throw new TypingException("Incompatible types in if-else branches");
+        }
+    }
+
     public static Type typeCheck(Exp e) throws TypingException {
         TypeChecker i = new TypeChecker();
         Env<Type> globalEnv = new Env<>();

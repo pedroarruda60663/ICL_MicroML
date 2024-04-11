@@ -46,6 +46,10 @@ TOKEN :
   |
   < LET: "let" >
   |
+  < IF: "if" >
+  |
+  < ELSE: "else" >
+  |
   < IN: "in" >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
@@ -66,7 +70,7 @@ TOKEN :
   < LESSEQ: "<=" >
   |
   < GREATEREQ: ">=" >
-    |
+  |
   < EQ : "=" >
   |
   < EQUALS: "==" >
@@ -87,12 +91,20 @@ Exp decl() :
     <LET> (varDecl = assignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = decl() { return new ASTLet(varDecls, e); }
   |
     e = BExp() { return e; }
+  |
+    e = IfElse() { return e; }
 }
 
 ASTVarDecl assignment() :
 { Token x; Exp e; }
 {
   x = <Id> <EQ> e = BExp() [<EL>] { return new ASTVarDecl(x.image, e); }
+}
+
+Exp IfElse() :
+{ Exp e1, e2, e3; }
+{
+  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] <ELSE> [<EL>] e3 = Expr() { return new ASTIf(e1, e2, e3); }
 }
 
 Exp BExp() :
@@ -137,7 +149,7 @@ Exp Term() :
 }
 
 Exp Fact() :
-{ Token x; Exp e; }
+{ Token x; Exp e;}
 {
       x = <Num>
   {

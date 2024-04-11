@@ -141,6 +141,15 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTIf e, Env<Void> env) throws TypingException {
+		e.cond.accept(this, env);
+		e.ifBody.accept(this, env);
+		e.elseBody.accept(this, env);
+		block.addInstruction(new IIf());
+		return null;
+	}
+
 
 	public static BasicBlock codeGen(Exp e) throws TypingException {
 		CodeGen cg = new CodeGen();

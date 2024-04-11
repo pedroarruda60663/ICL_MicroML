@@ -135,6 +135,16 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		return new BoolValue(n1.getValue() >= n2.getValue());
 	}
 
+	@Override
+	public Value visit(ASTIf e, Env<Value> env) throws TypingException {
+		BoolValue cond = e.cond.accept(this, env).asBoolValue();
+		if (cond.getValue()) {
+			return e.ifBody.accept(this, env);
+		} else {
+			return e.elseBody.accept(this, env);
+		}
+	}
+
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();
 		Env<Value> globalEnv = new Env<>();
