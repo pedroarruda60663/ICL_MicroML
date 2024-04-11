@@ -126,6 +126,8 @@ e1 = new ASTNot(e2);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case LESS:
     case GREATER:
+    case LESSEQ:
+    case GREATEREQ:
     case EQUALS:
     case NOTEQUALS:{
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -139,6 +141,18 @@ e1 = new ASTLess(e1,e2);
         jj_consume_token(GREATER);
         e2 = Expr();
 e1 = new ASTGreater(e1,e2);
+        break;
+        }
+      case LESSEQ:{
+        jj_consume_token(LESSEQ);
+        e2 = Expr();
+e1 = new ASTLessEq(e1,e2);
+        break;
+        }
+      case GREATEREQ:{
+        jj_consume_token(GREATEREQ);
+        e2 = Expr();
+e1 = new ASTGreaterEq(e1,e2);
         break;
         }
       case EQUALS:{
@@ -292,7 +306,7 @@ e1 = new ASTDiv(e1,e2);
 	   jj_la1_init_0();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x10000,0x800,0x97210,0x800,0xe0000,0xe0000,0x1b00000,0x1b00000,0x60,0x60,0x180,0x180,0x93210,};
+	   jj_la1_0 = new int[] {0x10000,0x800,0x97210,0x800,0xe0000,0xe0000,0x6f00000,0x6f00000,0x60,0x60,0x180,0x180,0x93210,};
 	}
 
   /** Constructor with InputStream. */
@@ -417,7 +431,7 @@ e1 = new ASTDiv(e1,e2);
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[25];
+	 boolean[] la1tokens = new boolean[27];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -431,7 +445,7 @@ e1 = new ASTDiv(e1,e2);
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 25; i++) {
+	 for (int i = 0; i < 27; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;
