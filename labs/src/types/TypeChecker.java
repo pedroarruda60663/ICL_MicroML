@@ -127,6 +127,20 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         return type;
     }
 
+    @Override
+    public Type visit(ASTLessEq e, Env<Type> env) throws TypingException {
+        ensureIntType(e.arg1.accept(this, env));
+        ensureIntType(e.arg2.accept(this, env));
+        return BoolType.getInstance();
+    }
+
+    @Override
+    public Type visit(ASTGreaterEq e, Env<Type> env) throws TypingException {
+        ensureIntType(e.arg1.accept(this, env));
+        ensureIntType(e.arg2.accept(this, env));
+        return BoolType.getInstance();
+    }
+
     public static Type typeCheck(Exp e) throws TypingException {
         TypeChecker i = new TypeChecker();
         Env<Type> globalEnv = new Env<>();

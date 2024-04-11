@@ -125,6 +125,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTLessEq e, Env<Void> env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		block.addInstruction(new ILessEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTGreaterEq e, Env<Void> env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		block.addInstruction(new IGreaterEq());
+		return null;
+	}
+
 
 	public static BasicBlock codeGen(Exp e) throws TypingException {
 		CodeGen cg = new CodeGen();

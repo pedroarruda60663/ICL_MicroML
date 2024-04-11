@@ -121,6 +121,20 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		return env.find(e.id);
 	}
 
+	@Override
+	public Value visit(ASTLessEq e, Env<Value> env) throws TypingException {
+		IntValue n1 = e.arg1.accept(this, env).asIntValue();
+		IntValue n2 = e.arg2.accept(this, env).asIntValue();
+		return new BoolValue(n1.getValue() <= n2.getValue());
+	}
+
+	@Override
+	public Value visit(ASTGreaterEq e, Env<Value> env) throws TypingException {
+		IntValue n1 = e.arg1.accept(this, env).asIntValue();
+		IntValue n2 = e.arg2.accept(this, env).asIntValue();
+		return new BoolValue(n1.getValue() >= n2.getValue());
+	}
+
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();
 		Env<Value> globalEnv = new Env<>();

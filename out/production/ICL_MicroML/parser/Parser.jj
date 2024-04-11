@@ -63,6 +63,10 @@ TOKEN :
   |
   < GREATER: ">" >
   |
+  < LESSEQ: "<=" >
+  |
+  < GREATEREQ: ">=" >
+    |
   < EQ : "=" >
   |
   < EQUALS: "==" >
@@ -88,7 +92,7 @@ Exp decl() :
 ASTVarDecl assignment() :
 { Token x; Exp e; }
 {
-  x = <Id> <EQ> e = BExp() { return new ASTVarDecl(x.image, e); }
+  x = <Id> <EQ> e = BExp() [<EL>] { return new ASTVarDecl(x.image, e); }
 }
 
 Exp BExp() :
@@ -107,6 +111,8 @@ Exp Cmp() :
    e1 = Expr()
    [ <LESS> e2 = Expr() { e1 = new ASTLess(e1,e2); }
    | <GREATER> e2 = Expr() { e1 = new ASTGreater(e1,e2); }
+   | <LESSEQ> e2 = Expr() { e1 = new ASTLessEq(e1,e2); }
+   | <GREATEREQ> e2 = Expr() { e1 = new ASTGreaterEq(e1,e2); }
    | <EQUALS> e2 = Expr() { e1 = new ASTEquals(e1,e2); }
    | <NOTEQUALS> e2 = Expr() { e1 = new ASTNotEquals(e1,e2); } ]
    { return e1; }
