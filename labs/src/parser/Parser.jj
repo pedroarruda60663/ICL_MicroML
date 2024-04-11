@@ -82,7 +82,7 @@ Exp Start() :
 }
 
 Exp decl() :
-{ List<ASTVarDecl> varDecls = new ArrayList<>(); Exp e; ASTVarDecl varDecl; }
+{ List<ASTVarDecl> varDecls; Exp e; ASTVarDecl varDecl; }
 {
     <LET> (varDecl = assignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = decl() { return new ASTLet(varDecls, e); }
   |
