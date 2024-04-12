@@ -102,6 +102,20 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
+    public Type visit(ASTLessEq e, Env<Type> env) throws TypingException {
+        ensureIntType(e.arg1.accept(this, env));
+        ensureIntType(e.arg2.accept(this, env));
+        return BoolType.getInstance();
+    }
+
+    @Override
+    public Type visit(ASTGreaterEq e, Env<Type> env) throws TypingException {
+        ensureIntType(e.arg1.accept(this, env));
+        ensureIntType(e.arg2.accept(this, env));
+        return BoolType.getInstance();
+    }
+
+    @Override
     public Type visit(ASTBool b, Env<Type> env) throws TypingException {
         return BoolType.getInstance();
     }
@@ -128,17 +142,29 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
-    public Type visit(ASTLessEq e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        return BoolType.getInstance();
+    public Type visit(ASTWhile e, Env<Type> env) throws TypingException {
+        Type condType = e.condition.accept(this, env);
+        if (!condType.isBoolType()) {
+            throw new TypingException("While loop condition must be boolean.");
+        }
+        //if body type ever needs to be checked
+        e.body.accept(this, env);
+        return condType;
     }
 
     @Override
-    public Type visit(ASTGreaterEq e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        return BoolType.getInstance();
+    public Type visit(ASTAssign e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTNew e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTDeref e, Env<Type> env) throws TypingException {
+        return null;
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

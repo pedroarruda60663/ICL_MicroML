@@ -100,6 +100,20 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	}
 
 	@Override
+	public Value visit(ASTLessEq e, Env<Value> env) throws TypingException {
+		IntValue n1 = e.arg1.accept(this, env).asIntValue();
+		IntValue n2 = e.arg2.accept(this, env).asIntValue();
+		return new BoolValue(n1.getValue() <= n2.getValue());
+	}
+
+	@Override
+	public Value visit(ASTGreaterEq e, Env<Value> env) throws TypingException {
+		IntValue n1 = e.arg1.accept(this, env).asIntValue();
+		IntValue n2 = e.arg2.accept(this, env).asIntValue();
+		return new BoolValue(n1.getValue() >= n2.getValue());
+	}
+
+	@Override
 	public Value visit(ASTBool e, Env<Value> env) throws TypingException {
 		return new BoolValue(e.value);
 	}
@@ -122,17 +136,32 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	}
 
 	@Override
-	public Value visit(ASTLessEq e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() <= n2.getValue());
+	public Value visit(ASTWhile e, Env<Value> env) throws TypingException {
+
+		Value result = null;
+		while (e.condition.accept(this, env).asBoolValue().getValue()) {
+
+			result = e.body.accept(this, env);
+
+		}
+
+		//return e.body.accept(this, env);
+		return result;
 	}
 
 	@Override
-	public Value visit(ASTGreaterEq e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() >= n2.getValue());
+	public Value visit(ASTAssign e, Env<Value> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Value visit(ASTNew e, Env<Value> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Value visit(ASTDeref e, Env<Value> env) throws TypingException {
+		return null;
 	}
 
 	public static Value interpret(Exp e) throws TypingException {

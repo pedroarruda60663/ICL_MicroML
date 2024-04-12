@@ -48,6 +48,18 @@ TOKEN :
   |
   < IN: "in" >
   |
+  < NEW: "new" >
+  |
+  < ASSIGN: ":=" >
+  |
+  < DEREF: "!" >
+  |
+  < WHILE: "while" >
+  |
+  < DO: "do" >
+  |
+  < END: "end" >
+  |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }
 
@@ -57,7 +69,7 @@ TOKEN :
   |
   < OR: "||" >
   |
-  < NOT: "!" >
+  < NOT: "~" >
   |
   < LESS: "<" >
   |
@@ -66,7 +78,7 @@ TOKEN :
   < LESSEQ: "<=" >
   |
   < GREATEREQ: ">=" >
-    |
+  |
   < EQ : "=" >
   |
   < EQUALS: "==" >
@@ -78,18 +90,26 @@ TOKEN :
 Exp Start() :
 { Exp e; }
 {
-  e = decl() <EL> { return e; }
+  e = Decl() <EL> { return e; }
 }
 
-Exp decl() :
-{ List<ASTVarDecl> varDecls; Exp e; ASTVarDecl varDecl; }
+Exp Decl() :
+{ List<ASTVarDecl> varDecls = new ArrayList<>(); Exp e; ASTVarDecl varDecl; }
 {
-    <LET> (varDecl = assignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = decl() { return new ASTLet(varDecls, e); }
+    <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = Decl() { return new ASTLet(varDecls, e); }
   |
     e = BExp() { return e; }
+  |
+    e = WhileDo() { return e; }
 }
 
-ASTVarDecl assignment() :
+Exp WhileDo():
+{Exp e1, e2;}
+{
+  <WHILE> e1 = Decl() <DO> e2 = Decl() <END> { return new ASTWhile(e1, e2); }
+}
+
+ASTVarDecl LetAssignment() :
 { Token x; Exp e; }
 {
   x = <Id> <EQ> e = BExp() [<EL>] { return new ASTVarDecl(x.image, e); }
@@ -98,11 +118,21 @@ ASTVarDecl assignment() :
 Exp BExp() :
 { Exp e1, e2; }
 {
-   e1 = Cmp()
-   [ <AND> e2 = BExp() { e1 = new ASTAnd(e1,e2); }
-   | <OR> e2 = BExp() { e1 = new ASTOr(e1,e2); }
-   | <NOT> e2 = BExp() { e1 = new ASTNot(e2); } ]
-   { return e1; }
+    e1 = Assignment()
+    [ <AND> e2 = BExp() { e1 = new ASTAnd(e1,e2); }
+    | <OR> e2 = BExp() { e1 = new ASTOr(e1,e2); }
+    | <NOT> e2 = BExp() { e1 = new ASTNot(e2); }
+     ]
+    { return e1; }
+
+}
+
+Exp Assignment() :
+{ Exp e1, e2; }
+{
+    e1 = Cmp()
+    [ <ASSIGN> e2 = Assignment() { e1 = new ASTAssign(e1, e2); } ]
+    { return e1; }
 }
 
 Exp Cmp() :
@@ -144,35 +174,25 @@ Exp Fact() :
     return new ASTInt(Integer.parseInt(x.image));
   }
   |
+      <MINUS> e = Fact()
+  {
+      return new ASTMult(new ASTInt(-1), e);
+  }
+  |
       x = <TRUE> { return new ASTBool(true); }
   |
       x = <FALSE> { return new ASTBool(false); }
   |
-      <LPAR> e = decl() <RPAR> { return e; }
+      <LPAR> e = Decl() <RPAR> { return e; }
   |
       <NOT> e = Fact() { return new ASTNot(e); }
   |
       x = <Id> { return new ASTId(x.image); }
-
+  |
+      <NEW> e = Fact() { return new ASTNew(e); }
+  |
+      <DEREF> e = Fact() { return new ASTDeref(e); }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

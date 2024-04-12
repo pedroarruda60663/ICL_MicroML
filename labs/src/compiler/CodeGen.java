@@ -110,6 +110,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
+	public Void visit(ASTLessEq e, Env<Void> env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		block.addInstruction(new ILessEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTGreaterEq e, Env<Void> env) throws TypingException {
+		e.arg1.accept(this, env);
+		e.arg2.accept(this, env);
+		block.addInstruction(new IGreaterEq());
+		return null;
+	}
+
+	@Override
 	public Void visit(ASTBool e, Env<Void> env) {
 		block.addInstruction(new SIPushBool(e.value) );
 		return null;
@@ -126,18 +142,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTLessEq e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-		block.addInstruction(new ILessEq());
+	public Void visit(ASTWhile e, Env<Void> env) throws TypingException {
 		return null;
 	}
 
 	@Override
-	public Void visit(ASTGreaterEq e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-		block.addInstruction(new IGreaterEq());
+	public Void visit(ASTAssign e, Env<Void> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTNew e, Env<Void> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTDeref e, Env<Void> env) throws TypingException {
 		return null;
 	}
 
