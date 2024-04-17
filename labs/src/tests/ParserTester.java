@@ -1,10 +1,12 @@
 package tests;
 
+import interpreter.Interpreter;
 import org.junit.Assert;
 import org.junit.Test;
 
 import main.Console;
 import parser.ParseException;
+import values.Value;
 
 
 public class ParserTester {
@@ -55,6 +57,7 @@ public class ParserTester {
 		testNegativeCase("<= 11\n");
 		testNegativeCase("&& A\n");
 	}
+
 }
 
 

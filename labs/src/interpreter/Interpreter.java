@@ -3,9 +3,7 @@ package interpreter;
 import ast.*;
 import symbols.Env;
 import types.TypingException;
-import values.BoolValue;
-import values.IntValue;
-import values.Value;
+import values.*;
 
 public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
@@ -138,30 +136,37 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	@Override
 	public Value visit(ASTWhile e, Env<Value> env) throws TypingException {
 
-		Value result = null;
 		while (e.condition.accept(this, env).asBoolValue().getValue()) {
-
-			result = e.body.accept(this, env);
-
+			 e.body.accept(this, env);
 		}
-
-		//return e.body.accept(this, env);
-		return result;
+		return UnitValue.getInstance();
 	}
 
 	@Override
 	public Value visit(ASTAssign e, Env<Value> env) throws TypingException {
-		return null;
+
+		Value newValue = e.newValue.accept(this, env);
+		RefValue refValue = e.reference.accept(this, env).asRefValue();
+		refValue.setValue(newValue);
+		return newValue;
 	}
 
 	@Override
 	public Value visit(ASTNew e, Env<Value> env) throws TypingException {
-		return null;
+
+		RefValue refValue = new RefValue(e.arg.accept(this, env));
+		return refValue;
 	}
 
 	@Override
 	public Value visit(ASTDeref e, Env<Value> env) throws TypingException {
-		return null;
+		RefValue refValue = e.arg.accept(this, env).asRefValue();
+		return refValue.getValue();
+	}
+
+	@Override
+	public Value visit(ASTUnit e, Env<Value> env) throws TypingException {
+		return UnitValue.getInstance();
 	}
 
 	public static Value interpret(Exp e) throws TypingException {

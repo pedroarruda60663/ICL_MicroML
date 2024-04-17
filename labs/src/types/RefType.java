@@ -1,12 +1,11 @@
 package types;
 
-public class BoolType implements Type {
-    private BoolType() {}
-    private static BoolType instance = new BoolType();
+public class RefType implements Type {
+    private Type refOf;
 
-    public static BoolType getInstance() {
-        return instance;
-    }
+    public RefType(Type t) { this.refOf = t; }
+
+    public Type getInner() { return refOf; }
 
     @Override
     public boolean isIntType() {
@@ -15,12 +14,12 @@ public class BoolType implements Type {
 
     @Override
     public boolean isBoolType() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isRefType() {
-        return false;
+        return true;
     }
 
     @Override
@@ -30,6 +29,11 @@ public class BoolType implements Type {
 
     @Override
     public String toString() {
-        return "bool";
+        return "ref_"+refOf.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 }

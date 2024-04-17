@@ -158,60 +158,64 @@ e1 = new ASTAssign(e1, e2);
 
   final public Exp Cmp() throws ParseException {Exp e1, e2;
     e1 = Expr();
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case LESS:
-    case GREATER:
-    case LESSEQ:
-    case GREATEREQ:
-    case EQUALS:
-    case NOTEQUALS:{
+    label_2:
+    while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case LESS:{
-        jj_consume_token(LESS);
-        e2 = Expr();
-e1 = new ASTLess(e1,e2);
+      case LESS:
+      case GREATER:
+      case LESSEQ:
+      case GREATEREQ:
+      case EQUALS:
+      case NOTEQUALS:{
+        ;
         break;
         }
-      case GREATER:{
-        jj_consume_token(GREATER);
-        e2 = Expr();
-e1 = new ASTGreater(e1,e2);
-        break;
-        }
-      case LESSEQ:{
-        jj_consume_token(LESSEQ);
-        e2 = Expr();
-e1 = new ASTLessEq(e1,e2);
-        break;
-        }
-      case GREATEREQ:{
-        jj_consume_token(GREATEREQ);
-        e2 = Expr();
-e1 = new ASTGreaterEq(e1,e2);
-        break;
-        }
+      default:
+        jj_la1[7] = jj_gen;
+        break label_2;
+      }
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case EQUALS:{
         jj_consume_token(EQUALS);
         e2 = Expr();
-e1 = new ASTEquals(e1,e2);
+e1 = new ASTEquals(e1, e2);
         break;
         }
       case NOTEQUALS:{
         jj_consume_token(NOTEQUALS);
         e2 = Expr();
-e1 = new ASTNotEquals(e1,e2);
+e1 = new ASTNotEquals(e1, e2);
+        break;
+        }
+      case LESS:{
+        jj_consume_token(LESS);
+        e2 = Expr();
+e1 = new ASTLess(e1, e2);
+        break;
+        }
+      case GREATER:{
+        jj_consume_token(GREATER);
+        e2 = Expr();
+e1 = new ASTGreater(e1, e2);
+        break;
+        }
+      case LESSEQ:{
+        jj_consume_token(LESSEQ);
+        e2 = Expr();
+e1 = new ASTLessEq(e1, e2);
+        break;
+        }
+      case GREATEREQ:{
+        jj_consume_token(GREATEREQ);
+        e2 = Expr();
+e1 = new ASTGreaterEq(e1, e2);
         break;
         }
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      break;
-      }
-    default:
-      jj_la1[8] = jj_gen;
-      ;
     }
 {if ("" != null) return e1;}
     throw new Error("Missing return statement in function");
@@ -252,32 +256,36 @@ e1 = new ASTSub(e1,e2);
 
   final public Exp Term() throws ParseException {Exp e1, e2;
     e1 = Fact();
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case TIMES:
-    case DIV:{
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TIMES:
+      case DIV:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[11] = jj_gen;
+        break label_3;
+      }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:{
         jj_consume_token(TIMES);
-        e2 = Term();
+        e2 = Fact();
 e1 = new ASTMult(e1,e2);
         break;
         }
       case DIV:{
         jj_consume_token(DIV);
-        e2 = Term();
+        e2 = Fact();
 e1 = new ASTDiv(e1,e2);
         break;
         }
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      break;
-      }
-    default:
-      jj_la1[12] = jj_gen;
-      ;
     }
 {if ("" != null) return e1;}
     throw new Error("Missing return statement in function");

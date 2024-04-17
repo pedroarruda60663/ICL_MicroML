@@ -128,7 +128,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             localEnv.bind(decl.id, type);
         }
         Type result = e.body.accept(this, localEnv);
-        // endScope() aqui?
+
         return result;
     }
 
@@ -147,24 +147,50 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         if (!condType.isBoolType()) {
             throw new TypingException("While loop condition must be boolean.");
         }
+
         //if body type ever needs to be checked
         e.body.accept(this, env);
-        return condType;
+
+        return UnitType.getInstance();
     }
 
     @Override
     public Type visit(ASTAssign e, Env<Type> env) throws TypingException {
-        return null;
+        Type referenceType = e.reference.accept(this, env);
+        Type newValueType = e.newValue.accept(this, env);
+
+        if (referenceType.isRefType()) {
+            Type innerType = ((RefType) referenceType).getInner();
+            if (!newValueType.equals(innerType)) {
+                throw new TypingException("Type mismatch in assignment: expected " + innerType + ", found " + newValueType);
+            }
+        } else {
+            throw new TypingException("Left-hand side of assignment must be a reference type.");
+        }
+
+        return newValueType;
     }
 
     @Override
     public Type visit(ASTNew e, Env<Type> env) throws TypingException {
-        return null;
+        Type innerType = e.arg.accept(this, env);
+        return new RefType(innerType);
     }
 
     @Override
     public Type visit(ASTDeref e, Env<Type> env) throws TypingException {
-        return null;
+        Type exprType = e.arg.accept(this, env);
+        if (!exprType.isRefType()) {
+            throw new TypingException("Dereferencing a non-reference type.");
+        }
+
+        return ((RefType) exprType).getInner();
+
+    }
+
+    @Override
+    public Type visit(ASTUnit e, Env<Type> env) throws TypingException {
+        return UnitType.getInstance();
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

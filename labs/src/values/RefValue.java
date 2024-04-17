@@ -1,9 +1,9 @@
 package values;
 
-public class BoolValue implements Value {
-	private boolean value;
-	
-	public BoolValue(boolean value) {
+public class RefValue implements Value {
+	private Value value;
+
+	public RefValue(Value value) {
 		this.value = value;
 	}
 
@@ -14,12 +14,12 @@ public class BoolValue implements Value {
 
 	@Override
 	public boolean isBoolValue() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isRefValue() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -29,26 +29,28 @@ public class BoolValue implements Value {
 
 	@Override
 	public BoolValue asBoolValue() {
-		return this;
+		throw new IllegalStateException("Not a BoolValue");
 	}
 
 	@Override
 	public RefValue asRefValue() {
-		throw new IllegalStateException("Not a RefValue");
+		return this;
 	}
 
-	public boolean getValue() {
+	public Value getValue() {
 		return value;
 	}
 
+	public void setValue(Value newValue) { this.value = newValue; }
+
 	@Override
 	public String toString() {
-		return Boolean.toString(value);
+		return "ref("+value.toString()+")";
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof BoolValue && value == ((BoolValue)obj).getValue();
+		return obj instanceof RefValue && value == ((RefValue)obj).getValue();
 	}
 
 }
