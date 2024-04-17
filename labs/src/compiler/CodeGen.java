@@ -6,10 +6,11 @@ import java.io.PrintStream;
 
 
 import ast.*;
+import ast.Bools.*;
+import ast.Ints.*;
 import symbols.Env;
 import target.*;
 import types.TypingException;
-import values.Value;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {

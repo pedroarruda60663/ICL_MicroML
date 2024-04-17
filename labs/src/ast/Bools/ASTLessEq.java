@@ -1,14 +1,13 @@
-package ast;
+package ast.Bools;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
-public class ASTAnd implements Exp{
+public class ASTLessEq implements Exp {
     public Exp arg1;
     public Exp arg2;
 
-    public ASTAnd(Exp arg1, Exp arg2) {
+    public ASTLessEq(Exp arg1, Exp arg2) {
         this.arg1 = arg1;
         this.arg2 = arg2;
     }

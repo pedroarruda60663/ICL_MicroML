@@ -18,6 +18,11 @@ public class BoolValue implements Value {
 	}
 
 	@Override
+	public boolean isRefValue() {
+		return false;
+	}
+
+	@Override
 	public IntValue asIntValue() {
 		throw new IllegalStateException("Not an IntValue");
 	}
@@ -25,6 +30,11 @@ public class BoolValue implements Value {
 	@Override
 	public BoolValue asBoolValue() {
 		return this;
+	}
+
+	@Override
+	public RefValue asRefValue() {
+		throw new IllegalStateException("Not a RefValue");
 	}
 
 	public boolean getValue() {

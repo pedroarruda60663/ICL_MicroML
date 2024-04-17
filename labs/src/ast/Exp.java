@@ -1,10 +1,9 @@
 package ast;
 
 
-import symbols.Env;
-import types.Type;
+import ast.Bools.*;
+import ast.Ints.*;
 import types.TypingException;
-import values.Value;
 
 public interface Exp {
 	public interface Visitor<T, E> {

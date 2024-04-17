@@ -1,10 +1,9 @@
-package ast;
+package ast.Ints;
 
-import symbols.Env;
+import ast.Exp;
 import types.*;
-import values.Value;
 
-public class ASTAdd implements Exp{
+public class ASTAdd implements Exp {
     public Exp arg1;
     public Exp arg2;
 

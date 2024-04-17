@@ -5,7 +5,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;
+import ast.*;import ast.Bools.*;import ast.Ints.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -48,9 +48,9 @@ TOKEN :
   |
   < IF: "if" >
   |
-  < ELSE: "else" >
-  |
   < END: "end" >
+  |
+  < ELSE: "else" >
   |
   < IN: "in" >
   |
@@ -88,7 +88,7 @@ Exp Start() :
 }
 
 Exp decl() :
-{ List<ASTVarDecl> varDecls; Exp e; ASTVarDecl varDecl; }
+{ List<ASTVarDecl> varDecls = new ArrayList<ASTVarDecl>(); Exp e; ASTVarDecl varDecl; }
 {
     <LET> (varDecl = assignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = decl() { return new ASTLet(varDecls, e); }
   |
@@ -104,9 +104,9 @@ ASTVarDecl assignment() :
 }
 
 Exp IfElse() :
-{ Exp e1, e2, e3; }
+{ Exp e1, e2, e3 = null; }
 {
-  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] <ELSE> [<EL>] e3 = Expr() [<EL>] <END> { return new ASTIf(e1, e2, e3); }
+  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] (<ELSE> [<EL>] e3 = Expr() [<EL>])? <END>{ return new ASTIf(e1, e2, e3); }
 }
 
 Exp BExp() :
@@ -135,7 +135,7 @@ Exp Cmp() :
 Exp Expr() :
 { Exp e1, e2; }
 {
-   e1 = Term() 
+   e1 = Term()
      [ <PLUS> e2 = Expr() { e1 = new ASTAdd(e1,e2); }
      | <MINUS> e2 = Expr() { e1 = new ASTSub(e1,e2); } ]
      { return e1; }
@@ -155,8 +155,8 @@ Exp Fact() :
 {
       x = <Num>
   {
-    return new ASTInt(Integer.parseInt(x.image));
-  }
+  return new ASTInt(Integer.parseInt(x.image));
+}
   |
       x = <TRUE> { return new ASTBool(true); }
   |

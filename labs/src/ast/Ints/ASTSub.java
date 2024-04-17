@@ -1,14 +1,13 @@
-package ast;
+package ast.Ints;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
-public class ASTOr implements Exp{
+public class ASTSub implements Exp {
     public Exp arg1;
     public Exp arg2;
 
-    public ASTOr(Exp arg1, Exp arg2) {
+    public ASTSub(Exp arg1, Exp arg2) {
         this.arg1 = arg1;
         this.arg2 = arg2;
     }

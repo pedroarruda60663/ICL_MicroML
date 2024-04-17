@@ -1,8 +1,7 @@
-package ast;
+package ast.Bools;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
 public class ASTBool implements Exp {
     public boolean value;

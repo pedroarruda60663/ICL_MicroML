@@ -1,6 +1,8 @@
 package interpreter;
 
 import ast.*;
+import ast.Bools.*;
+import ast.Ints.*;
 import symbols.Env;
 import types.TypingException;
 import values.BoolValue;

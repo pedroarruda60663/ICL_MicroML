@@ -1,15 +1,11 @@
 package main;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 
 import ast.Exp;
-import parser.ParseException;
-import parser.Parser;
-import parser.TokenMgrError;
 
-import compiler.*;
 import interpreter.*;
+import parser.*;
 import types.*;
 
 public class Console {
@@ -17,7 +13,6 @@ public class Console {
 	@SuppressWarnings("static-access")
 	public static void main(String args[]) {
 		Parser parser = new Parser(System.in);
-
 		while (true) {
 			try {
 				Exp e = parser.Start();

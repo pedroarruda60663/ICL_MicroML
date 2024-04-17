@@ -1,6 +1,8 @@
 package types;
 
 import ast.*;
+import ast.Bools.*;
+import ast.Ints.*;
 import symbols.Env;
 
 
@@ -145,11 +147,16 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTIf e, Env<Type> env) throws TypingException {
         ensureBoolType(e.cond.accept(this, env));
         Type type1 = e.ifBody.accept(this, env);
-        Type type2 = e.elseBody.accept(this, env);
-        if (type1.equals(type2)) {
+        if(e.elseBody == null) {
             return type1;
-        } else {
-            throw new TypingException("Incompatible types in if-else branches");
+        }
+        else {
+            Type type2 = e.elseBody.accept(this, env);
+            if (type1.equals(type2)) {
+                return type1;
+            } else {
+                throw new TypingException("Incompatible types in if-else branches");
+            }
         }
     }
 
