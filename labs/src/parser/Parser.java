@@ -223,32 +223,36 @@ e1 = new ASTGreaterEq(e1, e2);
 
   final public Exp Expr() throws ParseException {Exp e1, e2;
     e1 = Term();
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case PLUS:
-    case MINUS:{
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case PLUS:
+      case MINUS:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[9] = jj_gen;
+        break label_3;
+      }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PLUS:{
         jj_consume_token(PLUS);
-        e2 = Expr();
+        e2 = Term();
 e1 = new ASTAdd(e1,e2);
         break;
         }
       case MINUS:{
         jj_consume_token(MINUS);
-        e2 = Expr();
+        e2 = Term();
 e1 = new ASTSub(e1,e2);
         break;
         }
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      break;
-      }
-    default:
-      jj_la1[10] = jj_gen;
-      ;
     }
 {if ("" != null) return e1;}
     throw new Error("Missing return statement in function");
@@ -256,7 +260,7 @@ e1 = new ASTSub(e1,e2);
 
   final public Exp Term() throws ParseException {Exp e1, e2;
     e1 = Fact();
-    label_3:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:
@@ -266,7 +270,7 @@ e1 = new ASTSub(e1,e2);
         }
       default:
         jj_la1[11] = jj_gen;
-        break label_3;
+        break label_4;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TIMES:{
