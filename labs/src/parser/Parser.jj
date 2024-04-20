@@ -5,7 +5,7 @@ options {
 PARSER_BEGIN(Parser)
 
 package parser;
-import ast.*;
+import ast.*;import ast.bools.*;import ast.ints.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -54,6 +54,10 @@ TOKEN :
   |
   < DEREF: "!" >
   |
+  < IF: "if" >
+  |
+  < ELSE: "else" >
+  |
   < WHILE: "while" >
   |
   < DO: "do" >
@@ -94,13 +98,21 @@ Exp Start() :
 }
 
 Exp Decl() :
-{ List<ASTVarDecl> varDecls = new ArrayList<>(); Exp e; ASTVarDecl varDecl; }
+{ List<ASTVarDecl> varDecls = new ArrayList<ASTVarDecl>(); Exp e; ASTVarDecl varDecl; }
 {
     <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = Decl() { return new ASTLet(varDecls, e); }
   |
     e = BExp() { return e; }
   |
     e = WhileDo() { return e; }
+  |
+    e = IfElse() { return e; }
+}
+
+Exp IfElse() :
+{ Exp e1, e2, e3 = null; }
+{
+  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] (<ELSE> [<EL>] e3 = Expr() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
 }
 
 Exp WhileDo():
@@ -172,8 +184,8 @@ Exp Fact() :
 {
       x = <Num>
   {
-    return new ASTInt(Integer.parseInt(x.image));
-  }
+  return new ASTInt(Integer.parseInt(x.image));
+}
   |
       <MINUS> e = Fact()
   {

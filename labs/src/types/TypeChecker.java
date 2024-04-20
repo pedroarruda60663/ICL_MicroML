@@ -1,6 +1,8 @@
 package types;
 
 import ast.*;
+import ast.bools.*;
+import ast.ints.*;
 import symbols.Env;
 
 
@@ -139,6 +141,22 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             throw new TypingException("Undeclared identifier: " + e.id);
         }
         return type;
+    }
+
+    @Override
+    public Type visit(ASTIf e, Env<Type> env) throws TypingException {
+        ensureBoolType(e.cond.accept(this, env));
+        Type ifType = e.ifBody.accept(this, env);
+        if(e.elseBody == null) {
+            return ifType;
+        }
+        else {
+            Type elseType = e.elseBody.accept(this, env);
+            if (!ifType.equals(elseType)) {
+                throw new TypingException("If-else branches must have the same type.");
+            }
+            return ifType;
+        }
     }
 
     @Override

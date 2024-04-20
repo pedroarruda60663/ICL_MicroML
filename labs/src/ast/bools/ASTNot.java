@@ -1,16 +1,13 @@
-package ast;
+package ast.bools;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
-public class ASTNotEquals implements Exp{
+public class ASTNot implements Exp {
     public Exp arg1;
-    public Exp arg2;
 
-    public ASTNotEquals(Exp arg1, Exp arg2) {
+    public ASTNot(Exp arg1) {
         this.arg1 = arg1;
-        this.arg2 = arg2;
     }
 
     @Override

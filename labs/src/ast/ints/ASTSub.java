@@ -1,10 +1,9 @@
-package ast;
+package ast.ints;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
-public class ASTSub implements Exp{
+public class ASTSub implements Exp {
     public Exp arg1;
     public Exp arg2;
 

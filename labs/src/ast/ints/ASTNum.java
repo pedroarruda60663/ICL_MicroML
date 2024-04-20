@@ -1,8 +1,7 @@
-package ast;
+package ast.ints;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
 public class ASTNum implements Exp {
     public int value;

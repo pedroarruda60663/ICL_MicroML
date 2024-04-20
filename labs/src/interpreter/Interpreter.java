@@ -1,6 +1,8 @@
 package interpreter;
 
 import ast.*;
+import ast.bools.*;
+import ast.ints.*;
 import symbols.Env;
 import types.TypingException;
 import values.*;
@@ -109,6 +111,21 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		IntValue n1 = e.arg1.accept(this, env).asIntValue();
 		IntValue n2 = e.arg2.accept(this, env).asIntValue();
 		return new BoolValue(n1.getValue() >= n2.getValue());
+	}
+
+	@Override
+	public Value visit(ASTIf e, Env<Value> env) throws TypingException {
+		BoolValue condition = e.cond.accept(this, env).asBoolValue();
+		if (condition.getValue()) {
+			return e.ifBody.accept(this, env);
+		} else {
+			if(e.elseBody != null) {
+				return e.elseBody.accept(this, env);
+			} else {
+				return UnitValue.getInstance();
+				}
+		}
+
 	}
 
 	@Override

@@ -6,10 +6,11 @@ import java.io.PrintStream;
 
 
 import ast.*;
+import ast.bools.*;
+import ast.ints.*;
 import symbols.Env;
 import target.*;
 import types.TypingException;
-import values.Value;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
@@ -122,6 +123,15 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
 		block.addInstruction(new IGreaterEq());
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTIf e, Env<Void> env) throws TypingException {
+		e.cond.accept(this, env);
+		e.ifBody.accept(this, env);
+		e.elseBody.accept(this, env);
+		block.addInstruction(new IIf());
 		return null;
 	}
 

@@ -1,9 +1,8 @@
-package ast;
+package ast.ints;
 
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
 public class ASTMult implements Exp {
 	public Exp arg1;

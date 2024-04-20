@@ -1,10 +1,9 @@
 package ast;
 
 
-import symbols.Env;
-import types.Type;
+import ast.bools.*;
+import ast.ints.*;
 import types.TypingException;
-import values.Value;
 
 public interface Exp {
 	public interface Visitor<T, E> {
@@ -25,6 +24,7 @@ public interface Exp {
 		public T visit(ASTId e, E env) throws TypingException;
 		public T visit(ASTLessEq e, E env) throws TypingException;
 		public T visit(ASTGreaterEq e, E env) throws TypingException;
+		public T visit(ASTIf e, E env) throws TypingException;
 		public T visit(ASTWhile e, E env) throws TypingException;
 		public T visit(ASTAssign e, E env) throws TypingException;
 		public T visit(ASTNew e, E env) throws TypingException;

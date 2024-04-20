@@ -1,14 +1,12 @@
-package ast;
+package ast.bools;
 
-import symbols.Env;
+import ast.Exp;
 import types.TypingException;
-import values.Value;
 
-public class ASTNot implements Exp{
-    public Exp arg1;
-
-    public ASTNot(Exp arg1) {
-        this.arg1 = arg1;
+public class ASTBool implements Exp {
+    public boolean value;
+    public ASTBool(boolean parseBool) {
+        this.value = parseBool;
     }
 
     @Override
