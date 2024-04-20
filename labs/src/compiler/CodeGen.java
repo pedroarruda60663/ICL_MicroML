@@ -176,6 +176,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTPrint astPrint, Env<Void> env) throws TypingException {
+		return null;
+	}
+
 
 	public static BasicBlock codeGen(Exp e) throws TypingException {
 		CodeGen cg = new CodeGen();

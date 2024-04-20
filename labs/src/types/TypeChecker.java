@@ -155,7 +155,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             if (!ifType.equals(elseType)) {
                 throw new TypingException("If-else branches must have the same type.");
             }
-            return ifType;
+            return elseType;
         }
     }
 
@@ -209,6 +209,12 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTUnit e, Env<Type> env) throws TypingException {
         return UnitType.getInstance();
+    }
+
+    @Override
+    public Type visit(ASTPrint astPrint, Env<Type> env) throws TypingException {
+        //TODO : IMPLEMENT PRINT
+        return null;
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

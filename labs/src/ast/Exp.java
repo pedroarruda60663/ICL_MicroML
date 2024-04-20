@@ -30,6 +30,7 @@ public interface Exp {
 		public T visit(ASTNew e, E env) throws TypingException;
 		public T visit(ASTDeref e, E env) throws TypingException;
 		public T visit(ASTUnit e, E env) throws TypingException;
+		public T visit(ASTPrint e, E env) throws TypingException;
 	}
 	
     //public Type typeCheck() throws TypingException;

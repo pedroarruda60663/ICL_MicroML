@@ -186,6 +186,12 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		return UnitValue.getInstance();
 	}
 
+	@Override
+	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
+		//TODO : IMPLEMENT PRINT
+		return null;
+	}
+
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();
 		Env<Value> globalEnv = new Env<>();

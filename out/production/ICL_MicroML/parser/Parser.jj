@@ -62,7 +62,9 @@ TOKEN :
   |
   < DO: "do" >
   |
-  < END: "end" >
+  < END: "end" | "ende" >
+  |
+  < PRINT: "print" | "println" >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }

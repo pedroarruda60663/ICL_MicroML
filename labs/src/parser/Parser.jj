@@ -64,6 +64,8 @@ TOKEN :
   |
   < END: "end" >
   |
+  < PRINT: "print" | "println" >
+  |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }
 
