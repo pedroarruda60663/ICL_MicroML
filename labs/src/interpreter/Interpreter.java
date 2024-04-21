@@ -170,7 +170,6 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTNew e, Env<Value> env) throws TypingException {
-
 		RefValue refValue = new RefValue(e.arg.accept(this, env));
 		return refValue;
 	}
@@ -189,7 +188,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	@Override
 	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
 		//TODO : IMPLEMENT PRINT
-		return null;
+        return new RefValue(e.print.accept(this, env));
 	}
 
 	public static Value interpret(Exp e) throws TypingException {

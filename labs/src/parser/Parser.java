@@ -64,11 +64,23 @@ public class Parser implements ParserConstants {
       e = IfElse();
                    {if (true) return e;}
       break;
+    case PRINT:
+      e = Print();
+                  {if (true) return e;}
+      break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
+  }
+
+  final public Exp Print() throws ParseException {
+  Exp e;
+    jj_consume_token(PRINT);
+    e = Decl();
+                        {if (true) return new ASTPrint(e);}
     throw new Error("Missing return statement in function");
   }
 
@@ -406,7 +418,7 @@ public class Parser implements ParserConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x2000000,0x800,0x122d7250,0x800,0x800,0x800,0x800,0x100000,0x800,0x1c000000,0x1c000000,0x20000,0xe0000000,0xe0000000,0x60,0x60,0x180,0x180,0x12053250,};
+      jj_la1_0 = new int[] {0x2000000,0x800,0x132d7250,0x800,0x800,0x800,0x800,0x100000,0x800,0x1c000000,0x1c000000,0x20000,0xe0000000,0xe0000000,0x60,0x60,0x180,0x180,0x12053250,};
    }
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xd,0xd,0x0,0x0,0x0,0x0,0x0,};

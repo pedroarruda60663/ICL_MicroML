@@ -62,7 +62,7 @@ TOKEN :
   |
   < DO: "do" >
   |
-  < END: "end" | "ende" >
+  < END: "end" >
   |
   < PRINT: "print" | "println" >
   |
@@ -109,6 +109,14 @@ Exp Decl() :
     e = WhileDo() { return e; }
   |
     e = IfElse() { return e; }
+  |
+    e = Print() { return e; }
+}
+
+Exp Print() :
+{ Exp e;}
+{
+    <PRINT> e = Decl() {return new ASTPrint(e);}
 }
 
 Exp IfElse() :
