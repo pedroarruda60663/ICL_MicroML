@@ -96,13 +96,21 @@ TOKEN :
 Exp Start() :
 { Exp e; }
 {
-  e = Decl() <EL> { return e; }
+  e = SeqExp() <EL> { return e; }
+}
+
+Exp SeqExp() :
+{ Exp e1, e2;}
+{
+    e1 = Decl()
+    ( ";" e2 = SeqExp() { e1 = new ASTSeq(e1, e2); } )?
+        { return e1; }
 }
 
 Exp Decl() :
 { List<ASTVarDecl> varDecls = new ArrayList<ASTVarDecl>(); Exp e; ASTVarDecl varDecl; }
 {
-    <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = Decl() { return new ASTLet(varDecls, e); }
+    <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = SeqExp() { return new ASTLet(varDecls, e); }
   |
     e = BExp() { return e; }
   |
@@ -122,13 +130,13 @@ Exp Print() :
 Exp IfElse() :
 { Exp e1, e2, e3 = null; }
 {
-  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = Expr() [<EL>] (<ELSE> [<EL>] e3 = Expr() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
+  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = SeqExp() [<EL>] (<ELSE> [<EL>] e3 = SeqExp() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
 }
 
 Exp WhileDo():
 {Exp e1, e2;}
 {
-  <WHILE> e1 = Decl() <DO> e2 = Decl() <END> { return new ASTWhile(e1, e2); }
+  <WHILE> e1 = BExp() <DO> e2 = SeqExp() <END> { return new ASTWhile(e1, e2); }
 }
 
 ASTVarDecl LetAssignment() :

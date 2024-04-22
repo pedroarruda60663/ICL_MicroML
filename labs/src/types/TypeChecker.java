@@ -217,6 +217,12 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         return new RefType(referenceType);
     }
 
+    @Override
+    public Type visit(ASTSeq e, Env<Type> env) throws TypingException {
+        e.first.accept(this, env);
+        return e.second.accept(this, env);
+    }
+
     public static Type typeCheck(Exp e) throws TypingException {
         TypeChecker i = new TypeChecker();
         Env<Type> globalEnv = new Env<>();

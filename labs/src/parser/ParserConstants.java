@@ -116,6 +116,7 @@ public interface ParserConstants {
     "\"=\"",
     "\"==\"",
     "\"!=\"",
+    "\";\"",
   };
 
 }

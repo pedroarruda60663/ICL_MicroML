@@ -191,6 +191,12 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
         return new RefValue(e.print.accept(this, env));
 	}
 
+	@Override
+	public Value visit(ASTSeq e, Env<Value> env) throws TypingException {
+		e.first.accept(this, env);
+		return e.second.accept(this, env);
+	}
+
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();
 		Env<Value> globalEnv = new Env<>();
