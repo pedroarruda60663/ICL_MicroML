@@ -64,6 +64,8 @@ TOKEN :
   |
   < END: "end" >
   |
+  <SEQ: ";" >
+  |
   < PRINT: "print" | "println" >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
@@ -103,7 +105,7 @@ Exp SeqExp() :
 { Exp e1, e2;}
 {
     e1 = Decl()
-    ( ";" e2 = SeqExp() { e1 = new ASTSeq(e1, e2); } )?
+    ( <SEQ> [<EL>] e2 = SeqExp() { e1 = new ASTSeq(e1, e2); } )?
         { return e1; }
 }
 
@@ -136,7 +138,7 @@ Exp IfElse() :
 Exp WhileDo():
 {Exp e1, e2;}
 {
-  <WHILE> e1 = BExp() <DO> e2 = SeqExp() <END> { return new ASTWhile(e1, e2); }
+  <WHILE> e1 = BExp() <DO> [<EL>] e2 = SeqExp() [<EL>] <END> { return new ASTWhile(e1, e2); }
 }
 
 ASTVarDecl LetAssignment() :
@@ -202,8 +204,8 @@ Exp Fact() :
 {
       x = <Num>
   {
-  return new ASTInt(Integer.parseInt(x.image));
-}
+      return new ASTInt(Integer.parseInt(x.image));
+  }
   |
       <MINUS> e = Fact()
   {

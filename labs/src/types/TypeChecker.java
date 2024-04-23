@@ -214,7 +214,8 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
         Type referenceType = e.print.accept(this, env);
-        return new RefType(referenceType);
+        //return new RefType(referenceType);
+        return UnitType.getInstance();
     }
 
     @Override
