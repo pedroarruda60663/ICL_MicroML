@@ -56,6 +56,8 @@ TOKEN :
   |
   < IF: "if" >
   |
+  < THEN: "then" >
+  |
   < ELSE: "else" >
   |
   < WHILE: "while" >
@@ -132,7 +134,7 @@ Exp Print() :
 Exp IfElse() :
 { Exp e1, e2, e3 = null; }
 {
-  <IF> <LPAR> e1 = BExp() <RPAR> [<EL>] e2 = SeqExp() [<EL>] (<ELSE> [<EL>] e3 = SeqExp() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
+  <IF> <LPAR> e1 = BExp() <RPAR> <THEN> [<EL>] e2 = SeqExp() [<EL>] (<ELSE> [<EL>] e3 = SeqExp() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
 }
 
 Exp WhileDo():
