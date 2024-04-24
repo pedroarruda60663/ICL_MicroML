@@ -24,8 +24,8 @@ public class Console {
 				TypeChecker.typeCheck(e);
 				//CodeGen.writeToFile(e, "myFile.j");
 				System.out.println("Parse OK!" );
-			 	Interpreter.interpret(e);
-				//System.out.println(Interpreter.interpret(e));
+			 	//Interpreter.interpret(e);
+				System.out.println(Interpreter.interpret(e));
 			} catch (TypingException e) {
 				System.err.println("Type error: " + e.getMessage());
 			} catch (TokenMgrError e) {

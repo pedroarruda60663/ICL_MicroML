@@ -138,7 +138,7 @@ Exp IfElse() :
 Exp WhileDo():
 {Exp e1, e2;}
 {
-  <WHILE> e1 = BExp() <DO> [<EL>] e2 = SeqExp() [<EL>] <END> { return new ASTWhile(e1, e2); }
+  <WHILE> <LPAR> e1 = BExp() <RPAR> <DO> [<EL>] e2 = SeqExp() [<EL>] <END> { return new ASTWhile(e1, e2); }
 }
 
 ASTVarDecl LetAssignment() :
@@ -216,7 +216,7 @@ Exp Fact() :
   |
       x = <FALSE> { return new ASTBool(false); }
   |
-      <LPAR> e = Decl() <RPAR> { return e; }
+      <LPAR> e = Par() { return e; }
   |
       <NOT> e = Fact() { return new ASTNot(e); }
   |
@@ -227,6 +227,16 @@ Exp Fact() :
       <DEREF> e = Fact() { return new ASTDeref(e); }
   //|
     //  <LPAR> <RPAR> { return new ASTUnit(); }
+  //|
+    //   e = Par() { return e; }
+}
+
+Exp Par():
+{ Exp e;}
+{
+       <RPAR> { return new ASTUnit(); }
+    |
+        e = Decl() <RPAR> { return e;}
 }
 
 
