@@ -6,14 +6,10 @@ import java.util.List;
 public class BasicBlock {
 	
 	List<Instruction> instructions;
-
-	
 	
 	public BasicBlock() {
-		
 		instructions = new ArrayList<>();
 	}
-	
 	
 	public void addInstruction(Instruction i) {
 		instructions.add(i);
@@ -41,10 +37,6 @@ public class BasicBlock {
 		for (Instruction i : instructions) {
 			sb.append(i + "\n");
 		}
-		
-		
 	}
-	
-	
-	
+
 }

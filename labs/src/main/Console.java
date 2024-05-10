@@ -22,7 +22,7 @@ public class Console {
 			try {
 				Exp e = parser.Start();
 				TypeChecker.typeCheck(e);
-				//CodeGen.writeToFile(e, "myFile.j");
+				CodeGen.writeToFile(e, "myFile.j");
 				System.out.println("Parse OK!" );
 			 	//Interpreter.interpret(e);
 				System.out.println(Interpreter.interpret(e));
@@ -36,9 +36,9 @@ public class Console {
 				System.out.println("Syntax Error!");
 				e.printStackTrace();
 				parser.ReInit(System.in);
-			}/* catch (FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				throw new RuntimeException(e);
-			}*/
+			}
 		}
 	}
 

@@ -20,6 +20,7 @@ SKIP :
   " "
 | "\t"
 | "\r"
+//| "\n"
 }
 
 TOKEN :
@@ -100,29 +101,30 @@ TOKEN :
 Exp Start() :
 { Exp e; }
 {
-  e = SeqExp() <EL> { return e; }
+  e = SeqExp() /*<EOF>*/ <EL> { return e; }
 }
 
 Exp SeqExp() :
 { Exp e1, e2;}
 {
     e1 = Decl()
-    ( <SEQ> [<EL>] e2 = SeqExp() { e1 = new ASTSeq(e1, e2); } )?
+    ( <SEQ> e2 = SeqExp() { e1 = new ASTSeq(e1, e2); } )?
         { return e1; }
 }
 
 Exp Decl() :
 { List<ASTVarDecl> varDecls = new ArrayList<ASTVarDecl>(); Exp e; ASTVarDecl varDecl; }
 {
-    <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN> [<EL>] e = SeqExp() { return new ASTLet(varDecls, e); }
+    <LET> (varDecl = LetAssignment() { varDecls.add(varDecl); })+ <IN>  e = SeqExp() { return new ASTLet(varDecls, e); }
   |
-    e = BExp() { return e; }
+    e = Assignment() { return e; }
   |
     e = WhileDo() { return e; }
   |
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
+
 }
 
 Exp Print() :
@@ -134,39 +136,39 @@ Exp Print() :
 Exp IfElse() :
 { Exp e1, e2, e3 = null; }
 {
-  <IF> <LPAR> e1 = BExp() <RPAR> <THEN> [<EL>] e2 = SeqExp() [<EL>] (<ELSE> [<EL>] e3 = SeqExp() [<EL>])? <END> { return new ASTIf(e1, e2, e3); }
+  <IF> <LPAR> e1 = BExp() <RPAR> <THEN>  e2 = SeqExp()  (<ELSE>  e3 = SeqExp() )? <END> { return new ASTIf(e1, e2, e3); }
 }
 
 Exp WhileDo():
 {Exp e1, e2;}
 {
-  <WHILE> <LPAR> e1 = BExp() <RPAR> <DO> [<EL>] e2 = SeqExp() [<EL>] <END> { return new ASTWhile(e1, e2); }
+  <WHILE> <LPAR> e1 = BExp() <RPAR> <DO>  e2 = SeqExp()  <END> { return new ASTWhile(e1, e2); }
 }
 
 ASTVarDecl LetAssignment() :
 { Token x; Exp e; }
 {
-  x = <Id> <EQ> e = BExp() [<EL>] { return new ASTVarDecl(x.image, e); }
+  x = <Id> <EQ> e = BExp()  { return new ASTVarDecl(x.image, e); }
+}
+
+Exp Assignment() :
+{ Exp e1, e2; }
+{
+    e1 = BExp()
+    [ <ASSIGN> e2 = BExp() { e1 = new ASTAssign(e1, e2); } ]
+    { return e1; }
 }
 
 Exp BExp() :
 { Exp e1, e2; }
 {
-    e1 = Assignment()
+    e1 = Cmp()
     [ <AND> e2 = BExp() { e1 = new ASTAnd(e1,e2); }
     | <OR> e2 = BExp() { e1 = new ASTOr(e1,e2); }
     | <NOT> e2 = BExp() { e1 = new ASTNot(e2); }
      ]
     { return e1; }
 
-}
-
-Exp Assignment() :
-{ Exp e1, e2; }
-{
-    e1 = Cmp()
-    [ <ASSIGN> e2 = Assignment() { e1 = new ASTAssign(e1, e2); } ]
-    { return e1; }
 }
 
 Exp Cmp() :
@@ -227,10 +229,6 @@ Exp Fact() :
       <NEW> e = Fact() { return new ASTNew(e); }
   |
       <DEREF> e = Fact() { return new ASTDeref(e); }
-  //|
-    //  <LPAR> <RPAR> { return new ASTUnit(); }
-  //|
-    //   e = Par() { return e; }
 }
 
 Exp Par():

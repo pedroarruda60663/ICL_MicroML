@@ -19,7 +19,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
-		block.addInstruction(new SIPushInt(i.value) );
+		block.addInstruction(new SIPush(i.value) );
 		return null;
 	}
 
@@ -137,7 +137,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTBool e, Env<Void> env) {
-		block.addInstruction(new SIPushBool(e.value) );
+		int intBool = e.value ? 1 : 0;
+		block.addInstruction(new SIPush(intBool) );
 		return null;
 	}
 
