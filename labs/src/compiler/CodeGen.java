@@ -14,7 +14,7 @@ import types.TypingException;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
-	
+
 	BasicBlock block = new BasicBlock();
 
 	@Override
@@ -56,10 +56,17 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
+	public Void visit(ASTBool e, Env<Void> env) {
+		int intBool = e.value ? 1 : 0;
+		block.addInstruction(new SIPush(intBool) );
+		return null;
+	}
+
+	@Override
 	public Void visit(ASTAnd e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new IAdd());
+		block.addInstruction(new IAnd());
 		return null;
 	}
 
@@ -74,7 +81,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTNot e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
-		block.addInstruction(new INot());
+		block.addInstruction(new SIPush(1));
+		block.addInstruction(new IXor());
 		return null;
 	}
 
@@ -82,7 +90,21 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTLess e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new ILess());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new ILess(trueLabel));
+
+		// If comparison is false, push 0 (false) and jump to endLabel
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		// Label location where comparison is true
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1)); // Push 1 (true) on stack
+
+		// End label location to resume normal execution
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -90,7 +112,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTGreater e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new IGreater());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new IGreater(trueLabel));
+
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -98,7 +131,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTEquals e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new IEquals());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new IEquals(trueLabel));
+
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -106,7 +150,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTNotEquals e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new INotEquals());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new INotEquals(trueLabel));
+
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -114,7 +169,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTLessEq e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new ILessEq());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new ILessEq(trueLabel));
+
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -122,23 +188,44 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTGreaterEq e, Env<Void> env) throws TypingException {
 		e.arg1.accept(this, env);
 		e.arg2.accept(this, env);
-		block.addInstruction(new IGreaterEq());
+
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		block.addInstruction(new IGreaterEq(trueLabel));
+
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new IGoto(endLabel));
+
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
+	//TODO have to fix/handle the case where it returns unit
 	@Override
 	public Void visit(ASTIf e, Env<Void> env) throws TypingException {
-		e.cond.accept(this, env);
-		e.ifBody.accept(this, env);
-		e.elseBody.accept(this, env);
-		block.addInstruction(new IIf());
-		return null;
-	}
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
 
-	@Override
-	public Void visit(ASTBool e, Env<Void> env) {
-		int intBool = e.value ? 1 : 0;
-		block.addInstruction(new SIPush(intBool) );
+		e.cond.accept(this, env);
+
+		//if the condition is false, jump to the else branch (or to the end if no else branch)
+		block.addInstruction(new IIf(e.elseBody != null ? trueLabel : endLabel));
+
+		e.ifBody.accept(this, env);
+		//dar pop para dar return a unit no caso em que nao ha else?
+
+		//else branch (if exists)
+		if (e.elseBody != null) {
+			//after the then branch, jump to the end (if there's an else branch to skip)
+			block.addInstruction(new IGoto(endLabel));
+			block.addLabel(trueLabel);
+			e.elseBody.accept(this, env);
+		}
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -154,6 +241,20 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTWhile e, Env<Void> env) throws TypingException {
+		Label startLabel = new Label();
+		Label endLabel = new Label();
+
+		block.addLabel(startLabel);
+		e.condition.accept(this, env);
+
+		//if the condition is false, jump out of the loop
+		block.addInstruction(new IIf(endLabel));
+		e.body.accept(this, env);
+
+		//jump back to the start to re-evaluate the condition
+		block.addInstruction(new IGoto(startLabel));
+
+		block.addLabel(endLabel);
 		return null;
 	}
 
@@ -178,12 +279,27 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTPrint astPrint, Env<Void> env) throws TypingException {
+	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
+		// Get the expression to print
+		e.print.accept(this, env);
+
+		// Access System.out for printing
+		block.addInstruction(new IGetStatic("java/lang/System/out Ljava/io/PrintStream;"));
+
+		// Swap if necessary, depending on your stack state
+		block.addInstruction(new ISwap());
+
+		// Call the println method suitable for the expression's type
+		// For simplicity, assuming the expression's result is an integer
+		block.addInstruction(new IInvokeVirtual("java/io/PrintStream/println(I)V"));
+
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTSeq e, Env<Void> env) throws TypingException {
+		e.first.accept(this, env);
+		e.second.accept(this, env);
 		return null;
 	}
 
@@ -214,8 +330,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 				   """;
 		String footer = 
 				"""
-				invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-				invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
 				return
 				.end method
 				""";

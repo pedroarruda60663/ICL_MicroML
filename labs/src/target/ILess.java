@@ -2,8 +2,8 @@ package target;
 
 public class ILess extends Instruction {
 
-	public ILess() {
-		op = "iless";
-		args = null;
+	public ILess(Label label) {
+		op = "if_icmplt";
+		args = new String[]{label.toString()};
 	}
 }

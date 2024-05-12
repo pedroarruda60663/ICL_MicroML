@@ -191,7 +191,6 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
-       // return new RefValue(e.print.accept(this, env));
 		Value value = e.print.accept(this, env);
 		System.out.println(value);
 		return UnitValue.getInstance();

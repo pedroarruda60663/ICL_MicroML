@@ -2,8 +2,8 @@ package target;
 
 public class ILessEq extends Instruction {
 
-    public ILessEq() {
-        op = "ilesseq";
-        args = null;
+    public ILessEq(Label label) {
+        op = "if_icmple";
+        args = new String[]{label.toString()};
     }
 }

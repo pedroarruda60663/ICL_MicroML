@@ -2,8 +2,8 @@ package target;
 
 public class IGreater extends Instruction {
 
-	public IGreater() {
-		op = "igreater";
-		args = null;
+	public IGreater(Label label) {
+		op = "if_icmpgt";
+		args = new String[]{label.toString()};
 	}
 }

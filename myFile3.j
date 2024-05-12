@@ -10,13 +10,13 @@
  .limit stack 256
  ; setup local variables:
  ;    1 - the PrintStream object held in java.lang.out
+L4:
+sipush 1
+ifeq L6
+sipush 50
 getstatic java/lang/System/out Ljava/io/PrintStream;
-sipush 2
-sipush 3
-imul
-sipush 4
-iadd
-invokestatic java/lang/String/valueOf(I)Ljava/lang/String;
-invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V
+swap
+invokevirtual java/io/PrintStream/println(I)V
+L6:
 return
 .end method

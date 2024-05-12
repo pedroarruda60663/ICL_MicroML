@@ -2,8 +2,8 @@ package target;
 
 public class IIf extends Instruction{
 
-    public IIf() {
-        op = "if";
-        args = null;
+    public IIf(Label label) {
+        op = "ifeq";
+        args = new String[]{label.toString()};
     }
 }

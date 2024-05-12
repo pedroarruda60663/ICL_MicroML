@@ -2,8 +2,8 @@ package target;
 
 public class IEquals extends Instruction {
 
-	public IEquals() {
-		op = "iequals";
-		args = null;
+	public IEquals(Label label) {
+		op = "if_icmpeq";
+		args = new String[]{label.toString()};
 	}
 }
