@@ -1,5 +1,6 @@
 package ast;
 
+import types.Type;
 import types.TypingException;
 
 public class ASTIf implements Exp {
@@ -7,11 +8,17 @@ public class ASTIf implements Exp {
     public Exp cond;
     public Exp ifBody;
     public Exp elseBody;
+    public Type type;
 
     public ASTIf(Exp cond, Exp ifBody, Exp elseBody) {
         this.cond = cond;
         this.ifBody = ifBody;
         this.elseBody = elseBody;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 
     @Override

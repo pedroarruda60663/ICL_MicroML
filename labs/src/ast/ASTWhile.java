@@ -1,15 +1,22 @@
 package ast;
 
 
+import types.Type;
 import types.TypingException;
 
 public class ASTWhile implements Exp {
     public Exp condition;
     public Exp body;
+    public Type type;
 
     public ASTWhile(Exp condition, Exp body) {
         this.condition = condition;
         this.body = body;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 
     @Override

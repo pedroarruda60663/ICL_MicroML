@@ -2,7 +2,13 @@ package interpreter;
 
 import ast.*;
 import ast.bools.*;
+import ast.declarations.ASTId;
+import ast.declarations.ASTLet;
+import ast.declarations.ASTVarDecl;
 import ast.ints.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
+import ast.references.ASTNew;
 import symbols.Env;
 import types.TypingException;
 import values.*;

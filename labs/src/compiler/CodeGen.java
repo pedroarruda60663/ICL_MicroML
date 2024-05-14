@@ -7,9 +7,17 @@ import java.io.PrintStream;
 
 import ast.*;
 import ast.bools.*;
+import ast.declarations.ASTId;
+import ast.declarations.ASTLet;
+import ast.declarations.ASTVarDecl;
 import ast.ints.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
+import ast.references.ASTNew;
+import symbols.CompEnv;
 import symbols.Env;
-import target.*;
+import instructions.*;
+import symbols.Pair;
 import types.TypingException;
 
 
@@ -231,7 +239,17 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTLet e, Env<Void> env) throws TypingException {
-		return null;
+		/*int count = e.varDecls.size();
+		Pair<Frame,CompEnv> p = blocks.beginScope(count);
+		Frame f = p.first;
+		CompEnv newEnv = p.second;
+
+		for (ASTVarDecl b : e.varDecls) {
+ 			//emit code to store bindings in new frame
+		}
+		e.body.accept(this, null);
+		blocks.endScope(f,newEnv);
+		*/return null;
 	}
 
 	@Override
@@ -280,19 +298,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
-		// Get the expression to print
 		e.print.accept(this, env);
 
-		// Access System.out for printing
-		block.addInstruction(new IGetStatic("java/lang/System/out Ljava/io/PrintStream;"));
-
-		// Swap if necessary, depending on your stack state
+		block.addInstruction(new IGetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
 		block.addInstruction(new ISwap());
-
-		// Call the println method suitable for the expression's type
-		// For simplicity, assuming the expression's result is an integer
 		block.addInstruction(new IInvokeVirtual("java/io/PrintStream/println(I)V"));
-
 		return null;
 	}
 
@@ -323,10 +333,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 					  .end method
 					  .method public static main([Ljava/lang/String;)V
 					   .limit locals 10
-					   .limit stack 256
-					   ; setup local variables:
-					   ;    1 - the PrintStream object held in java.lang.out
-					  getstatic java/lang/System/out Ljava/io/PrintStream;					          
+					   .limit stack 256					          
 				   """;
 		String footer = 
 				"""

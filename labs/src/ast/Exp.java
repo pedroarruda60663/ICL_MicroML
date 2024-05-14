@@ -2,7 +2,13 @@ package ast;
 
 
 import ast.bools.*;
+import ast.declarations.ASTId;
+import ast.declarations.ASTLet;
 import ast.ints.*;
+import ast.references.ASTAssign;
+import ast.references.ASTDeref;
+import ast.references.ASTNew;
+import types.Type;
 import types.TypingException;
 
 public interface Exp {
@@ -33,9 +39,7 @@ public interface Exp {
 		public T visit(ASTPrint e, E env) throws TypingException;
 		public T visit(ASTSeq e, E env) throws TypingException;
 	}
-	
-    //public Type typeCheck() throws TypingException;
-	
+	public Type getType();
 	public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException;
 	
 	

@@ -1,13 +1,20 @@
 package ast;
 
+import types.Type;
 import types.TypingException;
 
 public class ASTPrint implements Exp{
 
     public Exp print;
+    public Type type;
 
     public ASTPrint(Exp print) {
         this.print = print;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
     }
 
     @Override
