@@ -18,7 +18,7 @@ public class CompEnv {
         int depth = -1;
         do {
             width = env.table.get(id);
-            env = this.prev;
+            env = env.prev;
             depth++;
         } while (width == null && env != null);
         return new Pair<>(depth,width);
