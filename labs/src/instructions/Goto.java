@@ -1,8 +1,8 @@
 package instructions;
 
-public class IGoto extends Instruction {
+public class Goto extends Instruction {
 
-    public IGoto(Label label) {
+    public Goto(Label label) {
         op = "goto";
         args = new String[]{label.toString()};
     }

@@ -3,7 +3,7 @@ package instructions;
 public class IUnit extends Instruction {
 
 	public IUnit() {
-		op = "return";
+		op = "aconst_null";
 		args = null;
 	}
 }
