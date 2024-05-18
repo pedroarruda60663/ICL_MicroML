@@ -266,27 +266,27 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		Frame f = p.first;
 		CompEnv newEnv = p.second;
 		String frameName = "frame_" + f.id;
-		block.addInstruction(new INew(frameName));
-		block.addInstruction(new IDup());
+		block.addInstruction(new New(frameName));
+		block.addInstruction(new Dup());
 		block.addInstruction(new InvokeSpecial(frameName + "/<init>()V"));
-		block.addInstruction(new IDup());
-		block.addInstruction(new IALoad(0));
-		block.addInstruction(new IPutField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
-		block.addInstruction(new IAStore(0));
+		block.addInstruction(new Dup());
+		block.addInstruction(new ALoad(0));
+		block.addInstruction(new PutField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
+		block.addInstruction(new AStore(0));
 
 		int loc = 0;
 		for (ASTVarDecl b : e.varDecls) {
- 			block.addInstruction(new IALoad(0));
+ 			block.addInstruction(new ALoad(0));
 			 b.exp.accept(this, env);
-			 block.addInstruction(new IPutField(frameName + "/loc_" + loc));
+			 block.addInstruction(new PutField(frameName + "/loc_" + loc));
 			 newEnv.put(b.id, loc);
 			 loc++;
 		}
 		e.body.accept(this, null);
 		block.endScope(f,newEnv);
-		block.addInstruction(new IALoad(0));
-		block.addInstruction(new IGetField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
-		block.addInstruction(new IAStore(0));
+		block.addInstruction(new ALoad(0));
+		block.addInstruction(new GetField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
+		block.addInstruction(new AStore(0));
 		return null;
 	}
 

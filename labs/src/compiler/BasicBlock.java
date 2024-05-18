@@ -8,7 +8,7 @@ import java.util.List;
 
 public class BasicBlock {
 
-	List<Object> instructions; // Changed to List<Object> to hold both Instructions and Labels
+	List<Object> instructions;
 
 	public BasicBlock() {
 		instructions = new ArrayList<>();

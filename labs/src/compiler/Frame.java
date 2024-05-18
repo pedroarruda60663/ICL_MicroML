@@ -15,7 +15,7 @@ public class Frame {
         this.id = id;
         this.prev = prev;
         this.nFields = nFields;
-        types = new ArrayList<>();
+        types = new ArrayList<>(nFields);
     }
 
     public void addField(Type type) {
