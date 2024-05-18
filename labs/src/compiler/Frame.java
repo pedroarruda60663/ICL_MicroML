@@ -1,5 +1,7 @@
 package compiler;
 
+import types.BoolType;
+import types.IntType;
 import types.Type;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public class Frame {
 
     public void addField(Type type) {
         types.add(type);
-        nFields++;
+        //nFields++;
     }
 
     @Override
@@ -28,15 +30,27 @@ public class Frame {
         StringBuilder sb = new StringBuilder();
         sb.append(".class public frame_").append(id).append("\n");
         sb.append(".super java/lang/Object\n").append("\n");
-        sb.append(".field public SL L").append(prev == null ? "java/lang/Object" : "frame_" + prev.id).append(";\n");
+        sb.append(".field public sl L").append(prev == null ? "java/lang/Object" : "frame_" + prev.id).append(";\n");
         for (int i = 0; i < nFields; i++) {
-            sb.append(".field public loc_").append(i).append(" ").append(types.get(i)).append("\n");
+            sb.append(".field public loc_").append(i).append(" ").append(getTypeDescriptor(types.get(i))).append("\n");
         }
         sb.append(".method public <init>()V").append("\n");
         sb.append("aload_0").append("\n");
         sb.append("invokenonvirtual java/lang/Object/<init>()V").append("\n");
         sb.append("return").append("\n");
+        sb.append(".end method");
         return sb.toString();
+    }
+
+    private String getTypeDescriptor(Type t) {
+        if (t instanceof BoolType) {
+            return "Z";
+        } else if (t instanceof IntType) {
+            return "I";
+            //case STRING:
+            //  return "Ljava/lang/String;";
+        }
+        throw new IllegalArgumentException("Unsupported type: " + t);
     }
 }
 

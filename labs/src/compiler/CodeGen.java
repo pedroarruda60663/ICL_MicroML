@@ -18,12 +18,15 @@ import symbols.CompEnv;
 import symbols.Env;
 import instructions.*;
 import symbols.Pair;
+import types.BoolType;
+import types.IntType;
+import types.Type;
 import types.TypingException;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
-	BlockSeq block = new BlockSeq();
+	static BlockSeq block = new BlockSeq();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -276,9 +279,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 		int loc = 0;
 		for (ASTVarDecl b : e.varDecls) {
+			f.addField(b.type);
  			block.addInstruction(new ALoad(0));
 			 b.exp.accept(this, env);
-			 block.addInstruction(new PutField(frameName + "/loc_" + loc));
+			//ajustar o 'I' ao type da variavel (Z for bool, V for string)
+			 block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
 			 newEnv.put(b.id, loc);
 			 loc++;
 		}
@@ -323,7 +328,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(new Dup());
 		block.addInstruction(new GetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
 		block.addInstruction(new Swap());
-		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(I)V"));
+		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(" + getTypeDescriptor(e.type) + ")V"));
 		return null;
 	}
 
@@ -336,11 +341,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 
-	public static BasicBlock codeGen(Exp e) throws TypingException {
+	public static BasicBlock codeGen(Exp e) throws TypingException, FileNotFoundException {
 		CodeGen cg = new CodeGen();
 		Env<Void> globalEnv = new Env<>();
 		e.accept(cg, globalEnv);
-		//check if we return basicblock or blockseq
+
+		for (Frame frame : cg.block.frames){
+			writeFrameToFile(frame.toString(), "frame_" + frame.id + ".j");
+		}
 		return cg.block.block;
 	}
 	
@@ -375,7 +383,23 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	    PrintStream out = new PrintStream(new FileOutputStream(filename));
 	    out.print(sb.toString());
 	    out.close();
-		
+	}
+
+	private String getTypeDescriptor(Type t) {
+		if (t instanceof BoolType) {
+			return "Z";
+		} else if (t instanceof IntType) {
+			return "I";
+			//case STRING:
+			//  return "Ljava/lang/String;";
+		}
+		throw new IllegalArgumentException("Unsupported type: " + t);
+	}
+
+	private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
+		PrintStream out = new PrintStream(new FileOutputStream(frameName));
+		out.print(frame);
+		out.close();
 	}
 
 }

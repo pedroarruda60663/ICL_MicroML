@@ -4,6 +4,7 @@ import ast.Exp;
 import types.Type;
 import types.TypingException;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public class ASTLet implements Exp {

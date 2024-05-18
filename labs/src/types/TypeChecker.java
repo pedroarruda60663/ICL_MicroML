@@ -151,6 +151,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         Env<Type> localEnv = env.beginScope();
         for (ASTVarDecl decl : e.varDecls) {
             Type type = decl.exp.accept(this, localEnv);
+            decl.type = type;
             localEnv.bind(decl.id, type);
         }
         Type result = e.body.accept(this, localEnv);
@@ -243,7 +244,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
         Type printType = e.print.accept(this, env);
-        e.type = UnitType.getInstance();
+        e.type = printType;
         return UnitType.getInstance();
     }
 

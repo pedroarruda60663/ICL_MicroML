@@ -11,6 +11,8 @@ import ast.references.ASTNew;
 import types.Type;
 import types.TypingException;
 
+import java.io.FileNotFoundException;
+
 public interface Exp {
 	public interface Visitor<T, E> {
 		public T visit(ASTInt i, E env) throws TypingException;
