@@ -9,29 +9,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockSeq {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames;
     Frame currFrame;
-    BasicBlock block = new BasicBlock();
+    BasicBlock block;
     CompEnv env;
 
     public BlockSeq() {
+        this.frames = new ArrayList<>();
+        this.block = new BasicBlock();
         env = new CompEnv(null);
     }
 
     public Pair<Frame, CompEnv> beginScope(int nFields) {
-        Frame newFrame = new Frame(frames.size(), currFrame);
-        currFrame = newFrame;
+        Frame newFrame = new Frame(frames.size(), currFrame, nFields);
         frames.add(newFrame);
+        currFrame = newFrame;
         env = new CompEnv(env);
-        for (int i = 0; i < nFields; i++) {
-           // newFrame.addField(new Type());
-        }
         return new Pair<>(newFrame, env);
     }
 
-    public void endScope() {
-        currFrame = currFrame.prev;
-        env = env.prev;
+    public void advanceToFrame(Frame f, CompEnv e){
+        this.currFrame = f;
+        this.env = e;
+    }
+
+    public void endScope(Frame f, CompEnv e) {
+        this.currFrame = f.prev;
+        this.env = e.prev;
     }
 
     public void addInstruction(Instruction i) {
@@ -45,7 +49,8 @@ public class BlockSeq {
         }
         int depth = loc.first;
         int fieldIndex = loc.second;
-        // Add appropriate instructions to fetch this variable based on depth and fieldIndex
+        //block.addInstruction(new Fetch(depth, fieldIndex, t));
+
     }
 }
 

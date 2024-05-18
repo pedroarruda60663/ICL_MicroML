@@ -7,13 +7,15 @@ import java.util.ArrayList;
 
 public class Frame {
     int nFields;
-    List<Type> types = new ArrayList<>();
+    List<Type> types;
     Frame prev;
     int id;
 
-    public Frame(int id, Frame prev) {
+    public Frame(int id, Frame prev, int nFields) {
         this.id = id;
         this.prev = prev;
+        this.nFields = nFields;
+        types = new ArrayList<>();
     }
 
     public void addField(Type type) {
