@@ -25,10 +25,17 @@ public class Frame {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Frame ID: " + id + "\nFields:\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append(".class public frame_").append(id).append("\n");
+        sb.append(".super java/lang/Object\n").append("\n");
+        sb.append(".field public SL L").append(prev == null ? "java/lang/Object" : "frame_" + prev.id).append(";\n");
         for (int i = 0; i < nFields; i++) {
-            sb.append("Field ").append(i).append(": Type ").append(types.get(i)).append("\n");
+            sb.append(".field public loc_").append(i).append(" ").append(types.get(i)).append("\n");
         }
+        sb.append(".method public <init>()V").append("\n");
+        sb.append("aload_0").append("\n");
+        sb.append("invokenonvirtual java/lang/Object/<init>()V").append("\n");
+        sb.append("return").append("\n");
         return sb.toString();
     }
 }

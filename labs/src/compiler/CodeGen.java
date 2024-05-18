@@ -9,18 +9,21 @@ import ast.*;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
+import ast.declarations.ASTVarDecl;
 import ast.ints.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
+import symbols.CompEnv;
 import symbols.Env;
 import instructions.*;
+import symbols.Pair;
 import types.TypingException;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
-	BasicBlock block = new BasicBlock();
+	BlockSeq block = new BlockSeq();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -258,21 +261,38 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTLet e, Env<Void> env) throws TypingException {
-		/*int count = e.varDecls.size();
-		Pair<Frame,CompEnv> p = blocks.beginScope(count);
+		int count = e.varDecls.size();
+		Pair<Frame,CompEnv> p = block.beginScope(count);
 		Frame f = p.first;
 		CompEnv newEnv = p.second;
+		String frameName = "frame_" + f.id;
+		block.addInstruction(new INew(frameName));
+		block.addInstruction(new IDup());
+		block.addInstruction(new InvokeSpecial(frameName + "/<init>()V"));
+		block.addInstruction(new IDup());
+		block.addInstruction(new IALoad(0));
+		block.addInstruction(new IPutField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
+		block.addInstruction(new IAStore(0));
 
+		int loc = 0;
 		for (ASTVarDecl b : e.varDecls) {
- 			//emit code to store bindings in new frame
+ 			block.addInstruction(new IALoad(0));
+			 b.exp.accept(this, env);
+			 block.addInstruction(new IPutField(frameName + "/loc_" + loc));
+			 newEnv.put(b.id, loc);
+			 loc++;
 		}
 		e.body.accept(this, null);
-		blocks.endScope(f,newEnv);
-		*/return null;
+		block.endScope(f,newEnv);
+		block.addInstruction(new IALoad(0));
+		block.addInstruction(new IGetField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
+		block.addInstruction(new IAStore(0));
+		return null;
 	}
 
 	@Override
 	public Void visit(ASTId e, Env<Void> env) throws TypingException {
+		block.fetch(e.id, e.type);
 		return null;
 	}
 
@@ -320,7 +340,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		CodeGen cg = new CodeGen();
 		Env<Void> globalEnv = new Env<>();
 		e.accept(cg, globalEnv);
-		return cg.block;
+		//check if we return basicblock or blockseq
+		return cg.block.block;
 	}
 	
 	

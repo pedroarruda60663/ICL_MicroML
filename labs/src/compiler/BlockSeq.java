@@ -1,6 +1,7 @@
 package compiler;
 
 import instructions.Instruction;
+import instructions.Label;
 import symbols.CompEnv;
 import symbols.Pair;
 import types.Type;
@@ -51,6 +52,10 @@ public class BlockSeq {
         int fieldIndex = loc.second;
         //block.addInstruction(new Fetch(depth, fieldIndex, t));
 
+    }
+
+    public void addLabel(Label label) {
+        block.addLabel(label);
     }
 }
 

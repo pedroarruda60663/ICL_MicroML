@@ -26,4 +26,8 @@ public class CompEnv {
     public Pair<Integer,Integer> find(String id) {
         return findIt(id);
     }
+
+    public void put(String id, Integer width) {
+        table.put(id, width);
+    }
 }
