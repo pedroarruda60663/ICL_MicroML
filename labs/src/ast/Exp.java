@@ -4,6 +4,8 @@ package ast;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
+import ast.functions.ASTFunCall;
+import ast.functions.ASTFunDef;
 import ast.ints.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
@@ -40,6 +42,8 @@ public interface Exp {
 		public T visit(ASTUnit e, E env) throws TypingException;
 		public T visit(ASTPrint e, E env) throws TypingException;
 		public T visit(ASTSeq e, E env) throws TypingException;
+        public T visit(ASTFunDef e, E env) throws TypingException;
+		public T visit(ASTFunCall e, E env) throws TypingException;
 	}
 	public Type getType();
 	public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException;

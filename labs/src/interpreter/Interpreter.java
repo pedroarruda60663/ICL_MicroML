@@ -5,6 +5,8 @@ import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
+import ast.functions.ASTFunCall;
+import ast.functions.ASTFunDef;
 import ast.ints.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
@@ -12,6 +14,9 @@ import ast.references.ASTNew;
 import symbols.Env;
 import types.TypingException;
 import values.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
@@ -151,7 +156,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 			localEnv.bind(decl.id, val);
 		}
 		Value result = e.body.accept(this, localEnv);
-		// endScope() aqui?
+
 		return result;
 	}
 
@@ -207,6 +212,33 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		e.first.accept(this, env);
 		return e.second.accept(this, env);
 	}
+
+	@Override
+	public Value visit(ASTFunDef e, Env<Value> env) throws TypingException {
+		ClosureValue closureValue = new ClosureValue(e.params, e.body, env);
+		return closureValue;
+	}
+
+	@Override
+	public Value visit(ASTFunCall e, Env<Value> env) throws TypingException {
+
+		ClosureValue function = e.id.accept(this, env).asClosureValue();
+
+		List<Value> argValues = new ArrayList<>();
+		for (Exp arg : e.params) {
+			argValues.add(arg.accept(this, env));
+		}
+
+		Env<Value> newEnv = function.env.beginScope();
+		for (int i = 0; i < function.params.size(); i++) {
+			newEnv.bind(function.params.get(i).first, argValues.get(i));
+		}
+
+		Value result = function.body.accept(this, newEnv);
+		newEnv.endScope();
+		return result;
+	}
+
 
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();

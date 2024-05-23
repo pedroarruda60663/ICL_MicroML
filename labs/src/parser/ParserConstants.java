@@ -57,27 +57,43 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int PRINT = 26;
   /** RegularExpression Id. */
-  int Id = 27;
+  int FUN = 27;
   /** RegularExpression Id. */
-  int AND = 28;
+  int COMMA = 28;
   /** RegularExpression Id. */
-  int OR = 29;
+  int ARROW = 29;
   /** RegularExpression Id. */
-  int NOT = 30;
+  int COLON = 30;
   /** RegularExpression Id. */
-  int LESS = 31;
+  int INT = 31;
   /** RegularExpression Id. */
-  int GREATER = 32;
+  int BOOL = 32;
   /** RegularExpression Id. */
-  int LESSEQ = 33;
+  int UNIT = 33;
   /** RegularExpression Id. */
-  int GREATEREQ = 34;
+  int REF = 34;
   /** RegularExpression Id. */
-  int EQ = 35;
+  int Id = 35;
   /** RegularExpression Id. */
-  int EQUALS = 36;
+  int AND = 36;
   /** RegularExpression Id. */
-  int NOTEQUALS = 37;
+  int OR = 37;
+  /** RegularExpression Id. */
+  int NOT = 38;
+  /** RegularExpression Id. */
+  int LESS = 39;
+  /** RegularExpression Id. */
+  int GREATER = 40;
+  /** RegularExpression Id. */
+  int LESSEQ = 41;
+  /** RegularExpression Id. */
+  int GREATEREQ = 42;
+  /** RegularExpression Id. */
+  int EQ = 43;
+  /** RegularExpression Id. */
+  int EQUALS = 44;
+  /** RegularExpression Id. */
+  int NOTEQUALS = 45;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -111,6 +127,14 @@ public interface ParserConstants {
     "\"end\"",
     "\";\"",
     "<PRINT>",
+    "\"fun\"",
+    "\",\"",
+    "\"->\"",
+    "\":\"",
+    "\"int\"",
+    "\"bool\"",
+    "\"unit\"",
+    "\"ref\"",
     "<Id>",
     "\"&&\"",
     "\"||\"",
