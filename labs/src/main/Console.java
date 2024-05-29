@@ -22,7 +22,7 @@ public class Console {
 			try {
 				Exp e = parser.Start();
 				TypeChecker.typeCheck(e);
-				//CodeGen.writeToFile(e, "myFile.j");
+				CodeGen.writeToFile(e, "myFile.j");
 				System.out.println("Parse OK!" );
 			 	//Interpreter.interpret(e);
 				System.out.println(Interpreter.interpret(e));
@@ -38,8 +38,10 @@ public class Console {
 				parser.ReInit(System.in);
 			} /*catch (FileNotFoundException e) {
 				throw new RuntimeException(e);
-			}*/
-		}
+			}*/ catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
 	}
 
 	public static boolean accept(String s) throws ParseException {

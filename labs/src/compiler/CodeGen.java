@@ -289,7 +289,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			 block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
 			//block.addInstruction(new AStore(0));
 			newEnv.put(b.id, loc);
-			 loc++;
+			loc++;
 		}
 		e.body.accept(this, null);
 		block.endScope(f,newEnv);
@@ -310,8 +310,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 		e.reference.accept(this, env);
 		e.newValue.accept(this, env);
-		block.addInstruction(new SetField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
-
+		block.addInstruction(new PutField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
 
 		return null;
 	}

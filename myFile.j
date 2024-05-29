@@ -21,29 +21,36 @@ new ref_int
 dup
 invokespecial ref_int/<init>()V
 dup
-sipush 1
+sipush 2
 putfield ref_int/value I
 putfield frame_0/loc_0 Lref_int;
-sipush 2
-sipush 1
-if_icmpgt L3
-sipush 0
-goto L4
-L3:
-sipush 1
-L4:
-ifeq L1
+new frame_1
+dup
+invokespecial frame_1/<init>()V
+dup
 aload 0
-getfield frame_0/loc_0 Lref_int;
-sipush 2
-setfield ref_int/value I
-goto L2
-L1:
+putfield frame_1/sl Lframe_0;
+astore 0
 aload 0
+new ref_int
+dup
+invokespecial ref_int/<init>()V
+dup
+sipush 3
+putfield ref_int/value I
+putfield frame_1/loc_0 Lref_int;
+aload 0
+getfield frame_1/loc_0 Lref_int;
+aload 0
+getfield frame_1/sl Lframe_0;
 getfield frame_0/loc_0 Lref_int;
-sipush 1
-setfield ref_int/value I
-L2:
+getfield ref_int/value I
+sipush 2
+iadd
+putfield ref_int/value I
+aload 0
+getfield frame_1/sl Lframe_0;
+astore 0
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0
