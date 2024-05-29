@@ -15,21 +15,6 @@ public class UnitValue implements Value {
 	}
 
 	@Override
-	public boolean isIntValue() {
-		return false;
-	}
-
-	@Override
-	public boolean isBoolValue() {
-		return false;
-	}
-
-	@Override
-	public boolean isRefValue() {
-		return false;
-	}
-
-	@Override
 	public IntValue asIntValue() {
 		return null;
 	}
@@ -41,6 +26,11 @@ public class UnitValue implements Value {
 
 	@Override
 	public RefValue asRefValue() {
+		return null;
+	}
+
+	@Override
+	public ClosureValue asClosureValue() {
 		return null;
 	}
 }

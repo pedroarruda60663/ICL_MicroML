@@ -5,12 +5,17 @@ import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
+import ast.functions.ASTFunCall;
+import ast.functions.ASTFunDef;
 import ast.ints.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
 import symbols.Env;
 import values.UnitValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
@@ -256,6 +261,51 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         return type;
     }
 
+    @Override
+    public Type visit(ASTFunDef e, Env<Type> env) throws TypingException {
+
+        Env<Type> newEnv = env.beginScope();
+        List<Type> paramTypes = new ArrayList<>();
+
+        for (int i = 0; i < e.params.size(); i++) {
+            Type paramType = e.params.get(i).second;
+            paramTypes.add(paramType);
+            newEnv.bind(e.params.get(i).first, paramType);
+        }
+
+        Type body = e.body.accept(this, newEnv);
+        newEnv.endScope();
+
+        return new FunType(paramTypes, body);
+    }
+
+    @Override
+    public Type visit(ASTFunCall e, Env<Type> env) throws TypingException {
+        Type funcType = e.id.accept(this, env);
+
+        if (!(funcType instanceof FunType funType)) {
+            throw new TypingException("Expected function type, but found: " + funcType);
+        }
+
+        List<Type> paramTypes = funType.arguments;
+        List<Exp> args = e.params;
+
+        if (paramTypes.size() != args.size()) {
+            throw new TypingException("Function called with wrong number of arguments");
+        }
+
+        for (int i = 0; i < args.size(); i++) {
+            Type argType = args.get(i).accept(this, env);
+            Type paramType = paramTypes.get(i);
+
+            if (!argType.equals(paramType)) {
+                throw new TypingException("Argument type mismatch: expected " + paramType + " but found " + argType);
+            }
+        }
+
+        return funType.resultType;
+    }
+
     public static Type typeCheck(Exp e) throws TypingException {
         TypeChecker i = new TypeChecker();
         Env<Type> globalEnv = new Env<>();
@@ -264,13 +314,13 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
     private void ensureIntType(Type t) throws TypingException {
         if (!t.isIntType()) {
-            throw new TypingException("Expected integer type");
+            throw new TypingException("Expected integer type, but found: " + t);
         }
     }
 
     private void ensureBoolType(Type t) throws TypingException {
         if (!t.isBoolType()) {
-            throw new TypingException("Expected boolean type");
+            throw new TypingException("Expected boolean type, but found: " + t);
         }
     }
 

@@ -5,4 +5,5 @@ public interface Type {
     boolean isBoolType();
     boolean isRefType();
     boolean isUnitType();
+    boolean isFunType();
 }

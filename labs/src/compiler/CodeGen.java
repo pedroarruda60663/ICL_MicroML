@@ -12,6 +12,8 @@ import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
+import ast.functions.ASTFunCall;
+import ast.functions.ASTFunDef;
 import ast.ints.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
@@ -374,6 +376,16 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.first.accept(this, env);
 		block.addInstruction(new Pop());
 		e.second.accept(this, env);
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTFunDef e, Env<Void> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTFunCall e, Env<Void> env) throws TypingException {
 		return null;
 	}
 

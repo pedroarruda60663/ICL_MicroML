@@ -8,21 +8,6 @@ public class RefValue implements Value {
 	}
 
 	@Override
-	public boolean isIntValue() {
-		return false;
-	}
-
-	@Override
-	public boolean isBoolValue() {
-		return false;
-	}
-
-	@Override
-	public boolean isRefValue() {
-		return true;
-	}
-
-	@Override
 	public IntValue asIntValue() {
 		throw new IllegalStateException("Not an IntValue");
 	}
@@ -35,6 +20,11 @@ public class RefValue implements Value {
 	@Override
 	public RefValue asRefValue() {
 		return this;
+	}
+
+	@Override
+	public ClosureValue asClosureValue() {
+		throw new IllegalStateException("Not a ClosureValue");
 	}
 
 	public Value getValue() {

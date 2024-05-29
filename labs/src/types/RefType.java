@@ -1,5 +1,7 @@
 package types;
 
+import values.RefValue;
+
 public class RefType implements Type {
     private Type refOf;
 
@@ -28,12 +30,24 @@ public class RefType implements Type {
     }
 
     @Override
+    public boolean isFunType() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "ref_"+refOf.toString();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        RefType other = (RefType) obj;
+        return refOf.equals(other.getInner());
     }
 }

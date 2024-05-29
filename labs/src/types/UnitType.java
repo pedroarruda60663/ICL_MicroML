@@ -20,6 +20,11 @@ public class UnitType implements Type {
     }
 
     @Override
+    public boolean isFunType() {
+        return false;
+    }
+
+    @Override
     public boolean isIntType() {
         return false;
     }
