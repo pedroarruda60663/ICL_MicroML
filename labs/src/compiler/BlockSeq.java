@@ -6,10 +6,7 @@ import instructions.Instruction;
 import instructions.Label;
 import symbols.CompEnv;
 import symbols.Pair;
-import types.BoolType;
-import types.IntType;
-import types.Type;
-import types.TypingException;
+import types.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -82,8 +79,9 @@ public class BlockSeq {
             return "Z";
         } else if (t instanceof IntType) {
             return "I";
-            //case STRING:
-            //  return "Ljava/lang/String;";
+        } else if (t instanceof RefType) {
+            RefType innerType = (RefType) t;
+            return "L" + innerType.toString() + ";";
         }
         throw new IllegalArgumentException("Unsupported type: " + t);
     }

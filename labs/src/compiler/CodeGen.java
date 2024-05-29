@@ -3,6 +3,8 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
 
 
 import ast.*;
@@ -18,15 +20,13 @@ import symbols.CompEnv;
 import symbols.Env;
 import instructions.*;
 import symbols.Pair;
-import types.BoolType;
-import types.IntType;
-import types.Type;
-import types.TypingException;
+import types.*;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	static BlockSeq block = new BlockSeq();
+	private static Set<Pair<String, String>> refTypes = new HashSet<>();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -273,6 +273,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(new Dup());
 		block.addInstruction(new InvokeSpecial(frameName + "/<init>()V"));
 		block.addInstruction(new Dup());
+
 		block.addInstruction(new ALoad(0));
 		block.addInstruction(new PutField(frameName + "/sl L" + (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
 		block.addInstruction(new AStore(0));
@@ -284,7 +285,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			 b.exp.accept(this, env);
 			//ajustar o 'I' ao type da variavel (Z for bool, V for string)
 			 block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
-			 newEnv.put(b.id, loc);
+			//block.addInstruction(new AStore(0));
+			newEnv.put(b.id, loc);
 			 loc++;
 		}
 		e.body.accept(this, null);
@@ -303,16 +305,51 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTAssign e, Env<Void> env) throws TypingException {
+
+		e.reference.accept(this, env);
+		e.newValue.accept(this, env);
+		block.addInstruction(new SetField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
+
+
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTNew e, Env<Void> env) throws TypingException {
+		String typename = e.type.toString();
+		block.addInstruction(new New(typename));
+		block.addInstruction(new Dup());
+		block.addInstruction(new InvokeSpecial(typename + "/<init>()V"));
+		block.addInstruction(new Dup());
+
+		e.arg.accept(this, env);
+		Type innerType = ((RefType) e.type).getInner();
+		String typeDescriptor = getTypeDescriptor(innerType);
+		block.addInstruction(new PutField(typename + "/value " + typeDescriptor));
+
+		Pair<String, String> pair = new Pair<>(typename, typeDescriptor);
+		refTypes.add(pair);
 		return null;
+	}
+
+	public static String createRefString(String type, String innerType) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(".source ").append(type).append(".j").append("\n");
+		sb.append(".class ").append(type).append("\n");
+		sb.append(".super java/lang/Object").append("\n").append("\n");
+		sb.append(".field public value ").append(innerType).append("\n").append("\n");
+		sb.append(".method public <init>()V").append("\n");
+		sb.append("aload_0").append("\n");
+		sb.append("invokespecial java/lang/Object/<init>()V").append("\n");
+		sb.append("return").append("\n");
+		sb.append(".end method");
+		return sb.toString();
 	}
 
 	@Override
 	public Void visit(ASTDeref e, Env<Void> env) throws TypingException {
+		e.arg.accept(this, env);
+		block.addInstruction(new GetField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
 		return null;
 	}
 
@@ -346,9 +383,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		Env<Void> globalEnv = new Env<>();
 		e.accept(cg, globalEnv);
 
+
+		for(Pair<String, String> pair : refTypes){
+			writeFrameToFile(createRefString(pair.first, pair.second), pair.first +".j");
+		}
 		for (Frame frame : cg.block.frames){
 			writeFrameToFile(frame.toString(), "frame_" + frame.id + ".j");
 		}
+
 		return cg.block.block;
 	}
 	
@@ -390,8 +432,9 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			return "Z";
 		} else if (t instanceof IntType) {
 			return "I";
-			//case STRING:
-			//  return "Ljava/lang/String;";
+		} else if (t instanceof RefType) {
+			RefType innerType = (RefType) t;
+			return "L" + innerType.toString() + ";";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}

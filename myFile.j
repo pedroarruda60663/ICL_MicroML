@@ -17,44 +17,32 @@ aload 0
 putfield frame_0/sl Ljava/lang/Object;
 astore 0
 aload 0
+new ref_int
+dup
+invokespecial ref_int/<init>()V
+dup
+sipush 1
+putfield ref_int/value I
+putfield frame_0/loc_0 Lref_int;
 sipush 2
-putfield frame_0/loc_0 I
-aload 0
-sipush 10
-putfield frame_0/loc_1 I
-aload 0
-getfield frame_0/loc_1 I
-aload 0
-getfield frame_0/loc_0 I
+sipush 1
 if_icmpgt L3
 sipush 0
 goto L4
 L3:
 sipush 1
 L4:
-ifeq L2
-new frame_1
-dup
-invokespecial frame_1/<init>()V
-dup
+ifeq L1
 aload 0
-putfield frame_1/sl Lframe_0;
-astore 0
-aload 0
+getfield frame_0/loc_0 Lref_int;
 sipush 2
-putfield frame_1/loc_0 I
+setfield ref_int/value I
+goto L2
+L1:
 aload 0
-getfield frame_1/loc_0 I
-sipush 10
-imul
-dup
-getstatic java/lang/System/out Ljava/io/PrintStream;
-swap
-invokevirtual java/io/PrintStream/println(I)V
-aload 0
-getfield frame_1/sl Lframe_0;
-astore 0
-pop
+getfield frame_0/loc_0 Lref_int;
+sipush 1
+setfield ref_int/value I
 L2:
 aload 0
 getfield frame_0/sl Ljava/lang/Object;

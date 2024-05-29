@@ -2,6 +2,7 @@ package compiler;
 
 import types.BoolType;
 import types.IntType;
+import types.RefType;
 import types.Type;
 
 import java.util.List;
@@ -47,10 +48,12 @@ public class Frame {
             return "Z";
         } else if (t instanceof IntType) {
             return "I";
-            //case STRING:
-            //  return "Ljava/lang/String;";
+        } else if (t instanceof RefType) {
+            RefType innerType = (RefType) t;
+            return "L" + innerType.toString() + ";";
         }
         throw new IllegalArgumentException("Unsupported type: " + t);
     }
+
 }
 
