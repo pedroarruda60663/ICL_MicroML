@@ -11,6 +11,7 @@ import ast.declarations.*;
 import ast.ints.*;
 import ast.references.*;
 import ast.functions.*;
+import ast.arrays.*;
 import symbols.*;
 import types.*;
 import java.util.List;
@@ -157,9 +158,11 @@ Exp Decl() :
 }
 
 Exp ArrayDec() :
-{ Token x; Exp e; }
+{ Token x; Exp e; Token type; Exp size;}
 {
-    <ARRAY> type = <INT> size = <Num> { return new ASTNewArray(type.image, Integer.parseInt(size.image)); }}
+    <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
+}
+
 
 
 Exp FunDef() :

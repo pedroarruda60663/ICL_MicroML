@@ -7,6 +7,7 @@ import ast.declarations.*;
 import ast.ints.*;
 import ast.references.*;
 import ast.functions.*;
+import ast.arrays.*;
 import symbols.*;
 import types.*;
 import java.util.List;
