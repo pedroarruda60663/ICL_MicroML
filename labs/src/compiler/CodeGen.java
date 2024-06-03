@@ -401,11 +401,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTArrayAssign e, Env<Void> env) throws TypingException {
+		e.array.accept(this, env);
+		e.index.accept(this, env);
+		e.newValue.accept(this, env);
+		block.addInstruction(new ArrayStore());
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTArrayAccess e, Env<Void> env) throws TypingException {
+		e.array.accept(this, env);
+		e.index.accept(this, env);
+		block.addInstruction(new ArrayLoad());
 		return null;
 	}
 

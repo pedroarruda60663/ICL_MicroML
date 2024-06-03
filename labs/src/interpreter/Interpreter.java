@@ -244,6 +244,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTNewArray e, Env<Value> env) throws TypingException {
+		//only works for int arrays
 		int size = e.size.accept(this, env).asIntValue().getValue();
 		Value[] values = new Value[size];
 		for (int i = 0; i < size; i++) {
@@ -254,12 +255,18 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTArrayAssign e, Env<Value> env) throws TypingException {
-		return null;
+		ArrayValues array = e.array.accept(this, env).asArrayValue();
+		int index = e.index.accept(this, env).asIntValue().getValue();
+		Value newValue = e.newValue.accept(this, env);
+		array.setValueAt(index, newValue);
+		return newValue;
 	}
 
 	@Override
 	public Value visit(ASTArrayAccess e, Env<Value> env) throws TypingException {
-		return null;
+		ArrayValues array = e.array.accept(this, env).asArrayValue();
+		int index = e.index.accept(this, env).asIntValue().getValue();
+		return array.getValueAt(index);
 	}
 
 

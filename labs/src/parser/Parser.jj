@@ -154,15 +154,13 @@ Exp Decl() :
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
-  |
-    e = ArrayDec() { return e; }
 }
 
-ASTVarDecl ArrayDec() :
+Exp ArrayDec() :
 { Token x; Exp e; }
 {
-    x = <Id> <EQ> <ARRAY> ( <INT> | <BOOL> ) <Num> { return new ASTVarDecl(x.image, new ASTNewArray(Integer.parseInt(x.image))); }
-}
+    <ARRAY> type = <INT> size = <Num> { return new ASTNewArray(type.image, Integer.parseInt(size.image)); }}
+
 
 Exp FunDef() :
 {
@@ -246,6 +244,8 @@ Exp BExp() :
     { return e1; }
     |
     e1 = FunDef() {return e1;}
+    |
+    e1 = ArrayDec() {return e1;}
 
 }
 

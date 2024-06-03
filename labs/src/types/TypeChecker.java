@@ -313,17 +313,43 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTNewArray e, Env<Type> env) throws TypingException {
         Type sizeType = e.size.accept(this, env);
         ensureIntType(sizeType);
-        return e.getType();
+        e.type = new ArrayType(e.elementType);
+        return e.type;
     }
 
     @Override
     public Type visit(ASTArrayAssign e, Env<Type> env) throws TypingException {
-        return null;
+        Type arrayType = e.array.accept(this, env);
+        if (!(arrayType instanceof ArrayType array)) {
+            throw new TypingException("Array assignment to a non-array type");
+        }
+
+        Type indexType = e.index.accept(this, env);
+        if (!(indexType instanceof IntType)) {
+            throw new TypingException("Array index must be an integer");
+        }
+
+        Type valueType = e.newValue.accept(this, env);
+        if (!valueType.equals(array.getElementType())) {
+            throw new TypingException("Array assignment type mismatch");
+        }
+
+        return UnitType.getInstance();
     }
 
     @Override
     public Type visit(ASTArrayAccess e, Env<Type> env) throws TypingException {
-        return null;
+        Type arrayType = e.array.accept(this, env);
+        if (!(arrayType instanceof ArrayType array)) {
+            throw new TypingException("Accessing a non-array type as an array");
+        }
+
+        Type indexType = e.index.accept(this, env);
+        if (!(indexType instanceof IntType)) {
+            throw new TypingException("Array index must be an integer");
+        }
+
+        return array.getElementType();
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

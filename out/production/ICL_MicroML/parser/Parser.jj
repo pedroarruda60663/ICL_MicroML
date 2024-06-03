@@ -86,6 +86,8 @@ TOKEN :
   < ARROW: "->" >
   |
   <COLON: ":" >
+  |
+  <ARRAY: "array" >
   //|
   //< TYPE: "int" | "bool" | "unit" >
   |
@@ -152,8 +154,13 @@ Exp Decl() :
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
-
 }
+
+Exp ArrayDec() :
+{ Token x; Exp e; }
+{
+    <ARRAY> type = <INT> size = <Num> { return new ASTNewArray(type.image, Integer.parseInt(size.image)); }}
+
 
 Exp FunDef() :
 {
@@ -237,6 +244,8 @@ Exp BExp() :
     { return e1; }
     |
     e1 = FunDef() {return e1;}
+    |
+    e1 = ArrayDec() {return e1;}
 
 }
 
@@ -323,5 +332,6 @@ Exp Par():
   |
       e = Decl() <RPAR> { return e;}
 }
+
 
 
