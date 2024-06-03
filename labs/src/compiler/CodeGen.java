@@ -8,6 +8,9 @@ import java.util.Set;
 
 
 import ast.*;
+import ast.arrays.ASTArrayAccess;
+import ast.arrays.ASTArrayAssign;
+import ast.arrays.ASTNewArray;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
@@ -329,7 +332,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(new PutField(typename + "/value " + typeDescriptor));
 
 		Pair<String, String> pair = new Pair<>(typename, typeDescriptor);
-		refTypes.add(pair);
+        refTypes.add(pair);
 		return null;
 	}
 
@@ -385,6 +388,24 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTFunCall e, Env<Void> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTNewArray e, Env<Void> env) throws TypingException {
+		e.size.accept(this, env);
+		String elementType = getTypeDescriptor(e.elementType);
+		block.addInstruction(new NewArray(elementType));
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTArrayAssign e, Env<Void> env) throws TypingException {
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTArrayAccess e, Env<Void> env) throws TypingException {
 		return null;
 	}
 

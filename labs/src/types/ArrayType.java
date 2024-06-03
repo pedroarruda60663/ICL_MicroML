@@ -1,13 +1,15 @@
 package types;
 
-import values.RefValue;
+public class ArrayType implements Type {
+    private Type elementType;
 
-public class RefType implements Type {
-    private Type refOf;
+    public ArrayType(Type elementType) {
+        this.elementType = elementType;
+    }
 
-    public RefType(Type t) { this.refOf = t; }
-
-    public Type getInner() { return refOf; }
+    public Type getElementType() {
+        return elementType;
+    }
 
     @Override
     public boolean isIntType() {
@@ -21,7 +23,7 @@ public class RefType implements Type {
 
     @Override
     public boolean isRefType() {
-        return true;
+        return false;
     }
 
     @Override
@@ -36,13 +38,12 @@ public class RefType implements Type {
 
     @Override
     public boolean isArrayType() {
-        return false;
+        return true;
     }
-
 
     @Override
     public String toString() {
-        return "ref_"+refOf.toString();
+        return "array_" + elementType.toString();
     }
 
     @Override
@@ -53,7 +54,7 @@ public class RefType implements Type {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        RefType other = (RefType) obj;
-        return refOf.equals(other.getInner());
+        ArrayType other = (ArrayType) obj;
+        return elementType.equals(other.getElementType());
     }
 }

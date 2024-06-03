@@ -25,6 +25,11 @@ public class UnitType implements Type {
     }
 
     @Override
+    public boolean isArrayType() {
+        return false;
+    }
+
+    @Override
     public boolean isIntType() {
         return false;
     }

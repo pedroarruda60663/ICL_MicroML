@@ -39,4 +39,7 @@ public class IntValue implements Value {
 	@Override
 	public ClosureValue asClosureValue() {throw new IllegalStateException("Not a ClosureValue");}
 
+	@Override
+	public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
+
 }

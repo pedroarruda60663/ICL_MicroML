@@ -86,6 +86,8 @@ TOKEN :
   < ARROW: "->" >
   |
   <COLON: ":" >
+  |
+  <ARRAY: "array" >
   //|
   //< TYPE: "int" | "bool" | "unit" >
   |
@@ -152,7 +154,14 @@ Exp Decl() :
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
+  |
+    e = ArrayDec() { return e; }
+}
 
+ASTVarDecl ArrayDec() :
+{ Token x; Exp e; }
+{
+    x = <Id> <EQ> <ARRAY> ( <INT> | <BOOL> ) <Num> { return new ASTVarDecl(x.image, new ASTNewArray(Integer.parseInt(x.image))); }
 }
 
 Exp FunDef() :
@@ -257,7 +266,7 @@ Exp Cmp() :
 Exp Expr() :
 { Exp e1, e2; }
 {
-   e1 = Term() 
+   e1 = Term()
      ( <PLUS> e2 = Term() { e1 = new ASTAdd(e1,e2); }
      | <MINUS> e2 = Term() { e1 = new ASTSub(e1,e2); } )*
      { return e1; }

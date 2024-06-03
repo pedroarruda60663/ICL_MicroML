@@ -37,6 +37,11 @@ public class FunType implements Type {
     public boolean isFunType() { return true; }
 
     @Override
+    public boolean isArrayType() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "function";
     }

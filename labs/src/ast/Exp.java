@@ -1,6 +1,9 @@
 package ast;
 
 
+import ast.arrays.ASTArrayAccess;
+import ast.arrays.ASTArrayAssign;
+import ast.arrays.ASTNewArray;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
@@ -44,6 +47,9 @@ public interface Exp {
 		public T visit(ASTSeq e, E env) throws TypingException;
         public T visit(ASTFunDef e, E env) throws TypingException;
 		public T visit(ASTFunCall e, E env) throws TypingException;
+		public T visit(ASTNewArray e, E env) throws TypingException;
+		public T visit(ASTArrayAssign e, E env) throws TypingException;
+		public T visit(ASTArrayAccess e, E env) throws TypingException;
 	}
 	public Type getType();
 	public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException;

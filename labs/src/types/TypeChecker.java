@@ -1,6 +1,9 @@
 package types;
 
 import ast.*;
+import ast.arrays.ASTArrayAccess;
+import ast.arrays.ASTArrayAssign;
+import ast.arrays.ASTNewArray;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
@@ -304,6 +307,23 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         }
 
         return funType.resultType;
+    }
+
+    @Override
+    public Type visit(ASTNewArray e, Env<Type> env) throws TypingException {
+        Type sizeType = e.size.accept(this, env);
+        ensureIntType(sizeType);
+        return e.getType();
+    }
+
+    @Override
+    public Type visit(ASTArrayAssign e, Env<Type> env) throws TypingException {
+        return null;
+    }
+
+    @Override
+    public Type visit(ASTArrayAccess e, Env<Type> env) throws TypingException {
+        return null;
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

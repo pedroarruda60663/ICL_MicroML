@@ -33,4 +33,8 @@ public class UnitValue implements Value {
 	public ClosureValue asClosureValue() {
 		return null;
 	}
+
+	@Override
+	public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
+
 }

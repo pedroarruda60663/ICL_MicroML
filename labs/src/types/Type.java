@@ -6,4 +6,5 @@ public interface Type {
     boolean isRefType();
     boolean isUnitType();
     boolean isFunType();
+    boolean isArrayType();
 }

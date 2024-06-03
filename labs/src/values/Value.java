@@ -6,5 +6,6 @@ public interface Value {
     BoolValue asBoolValue();
     RefValue asRefValue();
     ClosureValue asClosureValue();
+    ArrayValues asArrayValue();
 
 }

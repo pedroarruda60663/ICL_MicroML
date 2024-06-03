@@ -40,6 +40,9 @@ public class ClosureValue implements Value {
         return this;
     }
 
+
+    public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
+
     @Override
     public String toString() {
         return "function with " + params.size() + " arguments";

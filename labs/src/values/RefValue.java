@@ -27,6 +27,9 @@ public class RefValue implements Value {
 		throw new IllegalStateException("Not a ClosureValue");
 	}
 
+	@Override
+	public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
+
 	public Value getValue() {
 		return value;
 	}
