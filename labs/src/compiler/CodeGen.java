@@ -23,12 +23,14 @@ import symbols.Env;
 import instructions.*;
 import symbols.Pair;
 import types.*;
+import values.ClosureValue;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
-	static BlockSeq block = new BlockSeq();
-	private static Set<Pair<String, String>> refTypes = new HashSet<>();
+	BlockSeq block = new BlockSeq();
+	private Set<Pair<String, String>> refTypes = new HashSet<>();
+	private Set<String> funTypes = new HashSet<>();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -216,7 +218,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
-	//TODO ask if the case where it returns unit is well handled
 	@Override
 	public Void visit(ASTIf e, Env<Void> env) throws TypingException {
 		Label trueLabel = new Label();
@@ -285,7 +286,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			f.addField(b.type);
  			block.addInstruction(new ALoad(0));
 			 b.exp.accept(this, env);
-			//ajustar o 'I' ao type da variavel (Z for bool, V for string)
 			 block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
 			//block.addInstruction(new AStore(0));
 			newEnv.put(b.id, loc);
@@ -380,6 +380,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTFunDef e, Env<Void> env) throws TypingException {
+		ClosureComp closure = new ClosureComp(0, (FunType) e.type);
+		block.addClosure(closure);
 		return null;
 	}
 
@@ -395,11 +397,17 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.accept(cg, globalEnv);
 
 
-		for(Pair<String, String> pair : refTypes){
-			writeFrameToFile(createRefString(pair.first, pair.second), pair.first +".j");
+		for(Pair<String, String> pair : cg.refTypes){
+			writeJasminFile(createRefString(pair.first, pair.second), pair.first +".j");
+		}
+		for(String closureInterface : cg.funTypes){
+			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
+		}
+		for(ClosureComp closure : cg.block.closures){
+			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
 		}
 		for (Frame frame : cg.block.frames){
-			writeFrameToFile(frame.toString(), "frame_" + frame.id + ".j");
+			writeJasminFile(frame.toString(), "frame_" + frame.id + ".j");
 		}
 
 		return cg.block.block;
@@ -438,21 +446,22 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	    out.close();
 	}
 
-	private String getTypeDescriptor(Type t) {
+	public static String getTypeDescriptor(Type t) {
 		if (t instanceof BoolType) {
 			return "Z";
 		} else if (t instanceof IntType) {
 			return "I";
-		} else if (t instanceof RefType) {
-			RefType innerType = (RefType) t;
+		} else if (t instanceof RefType innerType) {
 			return "L" + innerType.toString() + ";";
+		} else if (t instanceof FunType funType) {
+			//return
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}
 
-	private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
-		PrintStream out = new PrintStream(new FileOutputStream(frameName));
-		out.print(frame);
+	private static void writeJasminFile(String content, String filename) throws FileNotFoundException {
+		PrintStream out = new PrintStream(new FileOutputStream(filename));
+		out.print(content);
 		out.close();
 	}
 

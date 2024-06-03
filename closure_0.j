@@ -1,8 +1,8 @@
-.class public frame_0
+.class public closure_0
 .super java/lang/Object
-
+.implements fun_int_bool_int
 .field public sl Ljava/lang/Object;
-.field public loc_0 Lref_ref_bool;
+
 .method public <init>()V
 aload_0
 invokenonvirtual java/lang/Object/<init>()V

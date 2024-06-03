@@ -215,8 +215,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTFunDef e, Env<Value> env) throws TypingException {
-		ClosureValue closureValue = new ClosureValue(e.params, e.body, env);
-		return closureValue;
+		return new ClosureValue(e.params, e.body, env);
 	}
 
 	@Override

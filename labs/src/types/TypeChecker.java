@@ -275,8 +275,9 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
         Type body = e.body.accept(this, newEnv);
         newEnv.endScope();
-
-        return new FunType(paramTypes, body);
+        FunType funType = new FunType(paramTypes, body);
+        e.type = funType;
+        return funType;
     }
 
     @Override

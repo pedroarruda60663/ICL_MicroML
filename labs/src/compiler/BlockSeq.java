@@ -16,18 +16,17 @@ import java.util.List;
 
 public class BlockSeq {
 
-    private static final Type BOOLEAN = BoolType.getInstance();
-    private static final Type INT = IntType.getInstance();
-
     List<Frame> frames;
     Frame currFrame;
     BasicBlock block;
     CompEnv env;
+    List<ClosureComp> closures;
 
     public BlockSeq() {
         this.frames = new ArrayList<>();
         this.block = new BasicBlock();
         env = new CompEnv(null);
+        this.closures = new ArrayList<>();
     }
 
     public Pair<Frame, CompEnv> beginScope(int nFields) {
@@ -41,6 +40,10 @@ public class BlockSeq {
     public void advanceToFrame(Frame f, CompEnv e){
         this.currFrame = f;
         this.env = e;
+    }
+
+    public void addClosure(ClosureComp c){
+        closures.add(c);
     }
 
     public void endScope(Frame f, CompEnv e) {
@@ -67,29 +70,12 @@ public class BlockSeq {
             block.addInstruction(new GetField("frame_" + i + "/sl Lframe_" + (i - 1) + ";"));
         }
 
-        block.addInstruction(new GetField("frame_" + (currFrame.id - depth) + "/loc_" + fieldIndex + " " + getTypeDescriptor(t)));
+        block.addInstruction(new GetField("frame_" + (currFrame.id - depth) + "/loc_" + fieldIndex + " " + CodeGen.getTypeDescriptor(t)));
     }
 
     public void addLabel(Label label) {
         block.addLabel(label);
     }
 
-    private String getTypeDescriptor(Type t) {
-        if (t instanceof BoolType) {
-            return "Z";
-        } else if (t instanceof IntType) {
-            return "I";
-        } else if (t instanceof RefType) {
-            RefType innerType = (RefType) t;
-            return "L" + innerType.toString() + ";";
-        }
-        throw new IllegalArgumentException("Unsupported type: " + t);
-    }
-
-    private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
-        PrintStream out = new PrintStream(new FileOutputStream(frameName));
-        out.print(frame);
-        out.close();
-    }
 }
 

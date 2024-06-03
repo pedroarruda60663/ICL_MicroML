@@ -10,7 +10,7 @@ public class FunType implements Type {
 
     public FunType(List<Type> arguments, Type t) {
         this.resultType = t;
-        this. arguments = arguments;
+        this.arguments = arguments;
     }
 
     @Override
@@ -38,7 +38,11 @@ public class FunType implements Type {
 
     @Override
     public String toString() {
-        return "function";
+        StringBuilder argumentsString = new StringBuilder();
+        for (Type t : arguments){
+            argumentsString.append("_").append(t);
+        }
+        return "fun" + argumentsString + "_" + resultType;
     }
 
     @Override
