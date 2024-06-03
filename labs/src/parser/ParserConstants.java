@@ -65,35 +65,37 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int COLON = 30;
   /** RegularExpression Id. */
-  int INT = 31;
+  int ARRAY = 31;
   /** RegularExpression Id. */
-  int BOOL = 32;
+  int INT = 32;
   /** RegularExpression Id. */
-  int UNIT = 33;
+  int BOOL = 33;
   /** RegularExpression Id. */
-  int REF = 34;
+  int UNIT = 34;
   /** RegularExpression Id. */
-  int Id = 35;
+  int REF = 35;
   /** RegularExpression Id. */
-  int AND = 36;
+  int Id = 36;
   /** RegularExpression Id. */
-  int OR = 37;
+  int AND = 37;
   /** RegularExpression Id. */
-  int NOT = 38;
+  int OR = 38;
   /** RegularExpression Id. */
-  int LESS = 39;
+  int NOT = 39;
   /** RegularExpression Id. */
-  int GREATER = 40;
+  int LESS = 40;
   /** RegularExpression Id. */
-  int LESSEQ = 41;
+  int GREATER = 41;
   /** RegularExpression Id. */
-  int GREATEREQ = 42;
+  int LESSEQ = 42;
   /** RegularExpression Id. */
-  int EQ = 43;
+  int GREATEREQ = 43;
   /** RegularExpression Id. */
-  int EQUALS = 44;
+  int EQ = 44;
   /** RegularExpression Id. */
-  int NOTEQUALS = 45;
+  int EQUALS = 45;
+  /** RegularExpression Id. */
+  int NOTEQUALS = 46;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -131,6 +133,7 @@ public interface ParserConstants {
     "\",\"",
     "\"->\"",
     "\":\"",
+    "\"array\"",
     "\"int\"",
     "\"bool\"",
     "\"unit\"",
