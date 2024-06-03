@@ -1,5 +1,6 @@
 package compiler;
 
+import ast.Exp;
 import instructions.ALoad;
 import instructions.GetField;
 import instructions.Instruction;
@@ -42,8 +43,12 @@ public class BlockSeq {
         this.env = e;
     }
 
-    public void addClosure(ClosureComp c){
-        closures.add(c);
+    public ClosureComp addClosure(FunType t, Exp body, List<Pair<String, Type>> params){
+        Pair<Frame, CompEnv> pair = this.beginScope(t.arguments.size());
+        ClosureComp closure = new ClosureComp(params, closures.size(), t, body, pair);
+        closures.add(closure);
+        endScope(pair.first, pair.second);
+        return closure;
     }
 
     public void endScope(Frame f, CompEnv e) {

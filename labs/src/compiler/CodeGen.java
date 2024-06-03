@@ -3,7 +3,9 @@ package compiler;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -30,7 +32,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	BlockSeq block = new BlockSeq();
 	private Set<Pair<String, String>> refTypes = new HashSet<>();
-	private Set<String> funTypes = new HashSet<>();
+	private Set<Pair<String, List<Type>>> funTypes = new HashSet<>();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -307,11 +309,9 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTAssign e, Env<Void> env) throws TypingException {
-
 		e.reference.accept(this, env);
 		e.newValue.accept(this, env);
 		block.addInstruction(new PutField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
-
 		return null;
 	}
 
@@ -380,14 +380,31 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTFunDef e, Env<Void> env) throws TypingException {
-		ClosureComp closure = new ClosureComp(0, (FunType) e.type);
-		block.addClosure(closure);
+		FunType t = (FunType) e.type;
+		ClosureComp closure = block.addClosure(t, e.body, e.params);
+		List<Type> types = new ArrayList<Type>(t.arguments);
+		types.add(t.resultType);
+		funTypes.add(new Pair<>(t.toString(), types));
+
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTFunCall e, Env<Void> env) throws TypingException {
 		return null;
+	}
+
+	public static String createFunInterface(String name, List<Type> types) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(".interface public ").append(name).append("\n");
+		sb.append(".super java/lang/Object").append("\n\n");
+		sb.append(".method public abstract apply(");
+		for (int i = 0; i < types.size()-1; i++){
+			sb.append(getTypeDescriptor(types.get(i)));
+		}
+		sb.append(")").append(getTypeDescriptor(types.get(types.size()-1))).append("\n");
+		sb.append(".end method");
+		return sb.toString();
 	}
 
 
@@ -400,11 +417,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		for(Pair<String, String> pair : cg.refTypes){
 			writeJasminFile(createRefString(pair.first, pair.second), pair.first +".j");
 		}
-		for(String closureInterface : cg.funTypes){
-			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
+		for(Pair<String, List<Type>> closureInterface : cg.funTypes){
+			writeJasminFile(createFunInterface(closureInterface.first, closureInterface.second), "fun_" + closureInterface.first + ".j");
 		}
 		for(ClosureComp closure : cg.block.closures){
-			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
+			writeJasminFile(closure.toString(cg), "closure_" + closure.id + ".j");
 		}
 		for (Frame frame : cg.block.frames){
 			writeJasminFile(frame.toString(), "frame_" + frame.id + ".j");
@@ -452,9 +469,9 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		} else if (t instanceof IntType) {
 			return "I";
 		} else if (t instanceof RefType innerType) {
-			return "L" + innerType.toString() + ";";
+			return "L" + innerType + ";";
 		} else if (t instanceof FunType funType) {
-			//return
+			return "Ljava/lang/Object;";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}
