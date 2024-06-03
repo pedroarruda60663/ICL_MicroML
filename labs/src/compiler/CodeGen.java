@@ -394,7 +394,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTNewArray e, Env<Void> env) throws TypingException {
 		e.size.accept(this, env);
-		String elementType = getTypeDescriptor(e.elementType);
+		String elementType = getTypeDescriptor(new IntType());
 		block.addInstruction(new NewArray(elementType));
 		return null;
 	}

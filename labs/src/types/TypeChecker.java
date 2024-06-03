@@ -313,7 +313,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTNewArray e, Env<Type> env) throws TypingException {
         Type sizeType = e.size.accept(this, env);
         ensureIntType(sizeType);
-        e.type = new ArrayType(e.elementType);
+        e.type = new ArrayType(new IntType());
         return e.type;
     }
 
@@ -334,7 +334,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             throw new TypingException("Array assignment type mismatch");
         }
 
-        return UnitType.getInstance();
+        return array.getElementType();
     }
 
     @Override

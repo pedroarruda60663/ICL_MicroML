@@ -1,7 +1,7 @@
 package types;
 
 public class IntType implements Type {
-	private IntType() {}
+	public IntType() {}
 
 	private static IntType instance = new IntType();
 

@@ -6,10 +6,10 @@ import types.TypingException;
 
 public class ASTNewArray implements Exp {
     public Type type;
-    public Type elementType;
+    public String elementType;
     public Exp size;
 
-    public ASTNewArray(Type elementType, Exp size) {
+    public ASTNewArray(String elementType, Exp size) {
         this.elementType = elementType;
         this.size = size;
     }
