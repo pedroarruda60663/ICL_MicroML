@@ -113,7 +113,7 @@ varDecls.add(varDecl);
 
   final public Exp ArrayAccess() throws ParseException {Exp e1, e2;
     jj_consume_token(GARRAY);
-    e1 = Fact();
+    e1 = BExp();
     jj_consume_token(SLPAR);
     e2 = BExp();
     jj_consume_token(SRPAR);
@@ -123,7 +123,7 @@ varDecls.add(varDecl);
 
   final public Exp ArrayAssign() throws ParseException {Exp e1, e2, e3;
     jj_consume_token(SARRAY);
-    e1 = Fact();
+    e1 = BExp();
     jj_consume_token(SLPAR);
     e2 = BExp();
     jj_consume_token(SRPAR);
