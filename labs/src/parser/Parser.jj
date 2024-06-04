@@ -97,8 +97,6 @@ TOKEN :
   < GARRAY: "garray" >
   |
   < SARRAY: "sarray" >
-  //|
-  //< TYPE: "int" | "bool" | "unit" >
   |
   < INT: "int" >
   |
@@ -107,8 +105,6 @@ TOKEN :
   < UNIT: "unit" >
   |
   < REF: "ref">
- // |
-  //<FUNTYPE: (<TYPE>)* <ARROW> <TYPE> >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }
@@ -163,19 +159,22 @@ Exp Decl() :
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
-
+  |
+    e = ArrayAccess() { return e; }
+  |
+    e = ArrayAssign() { return e; }
 }
 
 Exp ArrayAccess() :
 { Exp e1, e2; }
 {
-    <GARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
+    <GARRAY> e1 = BExp() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
 }
 
 Exp ArrayAssign() :
 { Exp e1, e2, e3; }
 {
-    <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
+    <SARRAY> e1 = BExp() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp ArrayDec() :
@@ -183,8 +182,6 @@ Exp ArrayDec() :
 {
     <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
 }
-
-
 
 Exp FunDef() :
 {
@@ -347,10 +344,6 @@ Exp Fact() :
       <NEW> e = Fact() { return new ASTNew(e); }
   |
       <DEREF> e = Fact() { return new ASTDeref(e); }
-  |
-      <GARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
-  |
-      <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp Par():
@@ -360,6 +353,3 @@ Exp Par():
   |
       e = Decl() <RPAR> { return e;}
 }
-
-
-
