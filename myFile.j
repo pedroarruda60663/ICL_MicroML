@@ -17,9 +17,15 @@ aload 0
 putfield frame_0/sl Ljava/lang/Object;
 astore 0
 aload 0
-sipush 10
+sipush 5
 newarray int
 putfield frame_0/loc_0 [I
+aload 0
+getfield frame_0/loc_0 [I
+sipush 1
+sipush 2
+iastore
+pop
 aload 0
 getfield frame_0/loc_0 [I
 sipush 1

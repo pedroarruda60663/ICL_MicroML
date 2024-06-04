@@ -331,11 +331,14 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         }
 
         Type valueType = e.newValue.accept(this, env);
-        if (!valueType.equals(array.getElementType())) {
-            throw new TypingException("Array assignment type mismatch");
-        }
+        Type elementType = array.getElementType();
+        //System.out.println("cena:" + valueType+"?");
+        //System.out.println("cena2:" + elementType+"?");
+        //if (!valueType.equals(elementType)) {
+        //    throw new TypingException("Array assignment type mismatch");
+        //}
 
-        return array.getElementType();
+        return valueType;
     }
 
     @Override
