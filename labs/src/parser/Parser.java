@@ -93,6 +93,16 @@ varDecls.add(varDecl);
 {if ("" != null) return e;}
       break;
       }
+    case GARRAY:{
+      e = ArrayAccess();
+{if ("" != null) return e;}
+      break;
+      }
+    case SARRAY:{
+      e = ArrayAssign();
+{if ("" != null) return e;}
+      break;
+      }
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
@@ -101,7 +111,29 @@ varDecls.add(varDecl);
     throw new Error("Missing return statement in function");
 }
 
-  final public Exp ArrayDec() throws ParseException {Token x; Exp e; Token type; Exp size;
+  final public Exp ArrayAccess() throws ParseException {Exp e1, e2;
+    jj_consume_token(GARRAY);
+    e1 = Fact();
+    jj_consume_token(SLPAR);
+    e2 = BExp();
+    jj_consume_token(SRPAR);
+{if ("" != null) return new ASTArrayAccess(e1, e2);}
+    throw new Error("Missing return statement in function");
+}
+
+  final public Exp ArrayAssign() throws ParseException {Exp e1, e2, e3;
+    jj_consume_token(SARRAY);
+    e1 = Fact();
+    jj_consume_token(SLPAR);
+    e2 = BExp();
+    jj_consume_token(SRPAR);
+    jj_consume_token(EQ);
+    e3 = BExp();
+{if ("" != null) return new ASTArrayAssign(e1, e2, e3);}
+    throw new Error("Missing return statement in function");
+}
+
+  final public Exp ArrayDec() throws ParseException {Token type; Exp size;
     jj_consume_token(ARRAY);
     type = jj_consume_token(INT);
     size = Fact();
@@ -622,6 +654,8 @@ e1.addArg(e2);
     case PRINT:
     case FUN:
     case ARRAY:
+    case GARRAY:
+    case SARRAY:
     case Id:
     case NOT:{
       e = Decl();
@@ -654,10 +688,10 @@ e1.addArg(e2);
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x2000000,0x0,0x8c4d7250,0x10000000,0x10000000,0x200,0x200000,0x20000,0x0,0x0,0x88053250,0x0,0x0,0x60,0x60,0x180,0x180,0x200,0x10000000,0x88053250,0x53250,0x8c4d7650,};
+	   jj_la1_0 = new int[] {0x8000000,0x0,0x3135c250,0x40000000,0x40000000,0x200,0x800000,0x80000,0x0,0x0,0x2014c250,0x0,0x0,0x60,0x60,0x180,0x180,0x200,0x40000000,0x2014c250,0x14c250,0x3135c650,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x10,0x90,0x0,0x0,0xf,0x0,0x0,0xe0,0xe0,0x90,0x6f00,0x6f00,0x0,0x0,0x0,0x0,0x0,0x0,0x90,0x90,0x90,};
+	   jj_la1_1 = new int[] {0x0,0x100,0x90e,0x0,0x0,0xf0,0x0,0x0,0xe00,0xe00,0x902,0x6f000,0x6f000,0x0,0x0,0x0,0x0,0x0,0x0,0x902,0x900,0x90e,};
 	}
 
   /** Constructor with InputStream. */
@@ -782,7 +816,7 @@ e1.addArg(e2);
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[47];
+	 boolean[] la1tokens = new boolean[51];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -799,7 +833,7 @@ e1.addArg(e2);
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 47; i++) {
+	 for (int i = 0; i < 51; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;
