@@ -9,19 +9,20 @@
  .limit locals 10
  .limit stack 256
 L0:
+new frame_0
+dup
+invokespecial frame_0/<init>()V
+dup
+aload 0
+putfield frame_0/sl Ljava/lang/Object;
+astore 0
+aload 0
+sipush 5
+newarray int
+putfield frame_0/loc_0 [I
 sipush 2
-sipush 1
-if_icmpgt L3
-sipush 0
-goto L4
-L3:
-sipush 1
-L4:
-ifeq L1
-sipush 2
-goto L2
-L1:
-sipush 1
-L2:
+aload 0
+getfield frame_0/sl Ljava/lang/Object;
+astore 0
 return
 .end method

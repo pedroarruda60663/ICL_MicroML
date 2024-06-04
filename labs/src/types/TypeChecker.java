@@ -314,6 +314,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         Type sizeType = e.size.accept(this, env);
         ensureIntType(sizeType);
         e.type = new ArrayType(new IntType());
+
         return e.type;
     }
 

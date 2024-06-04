@@ -163,10 +163,7 @@ Exp Decl() :
     e = IfElse() { return e; }
   |
     e = Print() { return e; }
-  |
-    e = ArrayAccess() { return e; }
-  |
-    e = ArrayAssign() { return e; }
+
 }
 
 Exp ArrayAccess() :
@@ -350,6 +347,10 @@ Exp Fact() :
       <NEW> e = Fact() { return new ASTNew(e); }
   |
       <DEREF> e = Fact() { return new ASTDeref(e); }
+  |
+      <GARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
+  |
+      <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp Par():

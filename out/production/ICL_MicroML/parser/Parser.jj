@@ -178,7 +178,7 @@ Exp ArrayAccess() :
 Exp ArrayAssign() :
 { Exp e1, e2, e3; }
 {
-    <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQUALS> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
+    <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp ArrayDec() :
