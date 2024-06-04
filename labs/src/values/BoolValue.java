@@ -28,6 +28,10 @@ public class BoolValue implements Value {
 	@Override
 	public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
 
+	@Override
+	public DoubleValue asDoubleValue() {
+		throw new IllegalStateException("Not a DoubleValue");
+	}
 
 	public boolean getValue() {
 		return value;

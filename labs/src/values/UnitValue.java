@@ -37,4 +37,8 @@ public class UnitValue implements Value {
 	@Override
 	public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
 
+	@Override
+	public DoubleValue asDoubleValue() {
+		throw new IllegalStateException("Not a DoubleValue");
+	}
 }

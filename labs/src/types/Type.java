@@ -7,4 +7,5 @@ public interface Type {
     boolean isUnitType();
     boolean isFunType();
     boolean isArrayType();
+    boolean isDoubleType();
 }

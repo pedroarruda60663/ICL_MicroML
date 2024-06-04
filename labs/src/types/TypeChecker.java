@@ -10,12 +10,11 @@ import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
 import ast.functions.ASTFunCall;
 import ast.functions.ASTFunDef;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
 import symbols.Env;
-import values.UnitValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,34 +30,62 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTAdd e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        e.type = IntType.getInstance();
-        return IntType.getInstance();
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+        if (type1.isDoubleType() || type2.isDoubleType()){
+            e.type = DoubleType.getInstance();
+            return DoubleType.getInstance();
+        }else {
+            e.type = IntType.getInstance();
+            return IntType.getInstance();
+        }
     }
 
     @Override
     public Type visit(ASTMult e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        e.type = IntType.getInstance();
-        return IntType.getInstance();
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+        if (type1.isDoubleType() || type2.isDoubleType()){
+            e.type = DoubleType.getInstance();
+            return DoubleType.getInstance();
+        }else {
+            e.type = IntType.getInstance();
+            return IntType.getInstance();
+        }
     }
 
     @Override
     public Type visit(ASTDiv e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        e.type = IntType.getInstance();
-        return IntType.getInstance();
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+        if (type1.isDoubleType() || type2.isDoubleType()){
+            e.type = DoubleType.getInstance();
+            return DoubleType.getInstance();
+        }else {
+            e.type = IntType.getInstance();
+            return IntType.getInstance();
+        }
     }
 
     @Override
     public Type visit(ASTSub e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
-        e.type = IntType.getInstance();
-        return IntType.getInstance();
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+        if (type1.isDoubleType() || type2.isDoubleType()){
+            e.type = DoubleType.getInstance();
+            return DoubleType.getInstance();
+        }else {
+            e.type = IntType.getInstance();
+            return IntType.getInstance();
+        }
     }
 
     @Override
@@ -86,16 +113,22 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTLess e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+
         e.type = BoolType.getInstance();
         return BoolType.getInstance();
     }
 
     @Override
     public Type visit(ASTGreater e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+
         e.type = BoolType.getInstance();
         return BoolType.getInstance();
     }
@@ -105,7 +138,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         Type type1 = e.arg1.accept(this, env);
         Type type2 = e.arg2.accept(this, env);
 
-        if (type1.isIntType() && type2.isIntType()) {
+        if ((type1.isIntType() || type1.isDoubleType()) && (type2.isIntType() || type2.isDoubleType() )) {
             e.type = BoolType.getInstance();
             return BoolType.getInstance();
         } else if (type1.isBoolType() && type2.isBoolType()) {
@@ -121,7 +154,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         Type type1 = e.arg1.accept(this, env);
         Type type2 = e.arg2.accept(this, env);
 
-        if (type1.isIntType() && type2.isIntType()) {
+        if ((type1.isIntType() || type1.isDoubleType()) && (type2.isIntType() || type2.isDoubleType() )) {
             e.type = BoolType.getInstance();
             return BoolType.getInstance();
         } else if (type1.isBoolType() && type2.isBoolType()) {
@@ -134,16 +167,22 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
     @Override
     public Type visit(ASTLessEq e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+
         e.type = BoolType.getInstance();
         return BoolType.getInstance();
     }
 
     @Override
     public Type visit(ASTGreaterEq e, Env<Type> env) throws TypingException {
-        ensureIntType(e.arg1.accept(this, env));
-        ensureIntType(e.arg2.accept(this, env));
+        Type type1 = e.arg1.accept(this, env);
+        Type type2 = e.arg2.accept(this, env);
+        ensureNumericalType(type1);
+        ensureNumericalType(type2);
+
         e.type = BoolType.getInstance();
         return BoolType.getInstance();
     }
@@ -202,7 +241,6 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             throw new TypingException("While loop condition must be boolean.");
         }
 
-        //if body type ever needs to be checked
         e.body.accept(this, env);
         e.type = UnitType.getInstance();
         return UnitType.getInstance();
@@ -353,6 +391,12 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         return array.getElementType();
     }
 
+    @Override
+    public Type visit(ASTDouble e, Env<Type> env) throws TypingException {
+        e.type = DoubleType.getInstance();
+        return DoubleType.getInstance();
+    }
+
     public static Type typeCheck(Exp e) throws TypingException {
         TypeChecker i = new TypeChecker();
         Env<Type> globalEnv = new Env<>();
@@ -371,5 +415,10 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         }
     }
 
+    private void ensureNumericalType(Type t) throws TypingException {
+        if (!t.isIntType() && !t.isDoubleType()) {
+            throw new TypingException("Expected numerical (int or double) type, but found: " + t);
+        }
+    }
 }
 

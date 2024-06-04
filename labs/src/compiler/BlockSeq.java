@@ -1,7 +1,7 @@
 package compiler;
 
 import instructions.ALoad;
-import instructions.GetField;
+import instructions.invoke_field.GetField;
 import instructions.Instruction;
 import instructions.Label;
 import symbols.CompEnv;

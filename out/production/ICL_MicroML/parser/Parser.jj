@@ -8,7 +8,7 @@ package parser;
 import ast.*;
 import ast.bools.*;
 import ast.declarations.*;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.*;
 import ast.functions.*;
 import ast.arrays.*;
@@ -16,7 +16,6 @@ import symbols.*;
 import types.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Parser {
 
@@ -34,6 +33,8 @@ SKIP :
 
 TOKEN :
 {
+  <DOUBLE: (["0"-"9"])+ "." (["0"-"9"])+ >
+  |
   < Num: (["0"-"9"]) + >
   |
   < PLUS : "+" >
@@ -97,18 +98,16 @@ TOKEN :
   < GARRAY: "garray" >
   |
   < SARRAY: "sarray" >
-  //|
-  //< TYPE: "int" | "bool" | "unit" >
   |
   < INT: "int" >
+  |
+  < DOUBLETYPE: "double" >
   |
   < BOOL: "bool" >
   |
   < UNIT: "unit" >
   |
   < REF: "ref">
- // |
-  //<FUNTYPE: (<TYPE>)* <ARROW> <TYPE> >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }
@@ -172,13 +171,13 @@ Exp Decl() :
 Exp ArrayAccess() :
 { Exp e1, e2; }
 {
-    <GARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
+    <GARRAY> e1 = BExp() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
 }
 
 Exp ArrayAssign() :
 { Exp e1, e2, e3; }
 {
-    <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
+    <SARRAY> e1 = BExp() <SLPAR> e2 = BExp() <SRPAR> <EQ> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp ArrayDec() :
@@ -186,8 +185,6 @@ Exp ArrayDec() :
 {
     <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
 }
-
-
 
 Exp FunDef() :
 {
@@ -218,6 +215,8 @@ Type Type() :
 }
 {
   <INT> { return IntType.getInstance(); }
+  |
+  <DOUBLETYPE> { return DoubleType.getInstance(); }
   |
   <BOOL> { return BoolType.getInstance(); }
   |
@@ -332,6 +331,11 @@ Exp Fact() :
       return new ASTInt(Integer.parseInt(x.image));
   }
   |
+        x = <DOUBLE>
+    {
+        return new ASTDouble(Double.parseDouble(x.image));
+    }
+  |
       <MINUS> e = Fact()
   {
       return new ASTMult(new ASTInt(-1), e);
@@ -359,6 +363,3 @@ Exp Par():
   |
       e = Decl() <RPAR> { return e;}
 }
-
-
-

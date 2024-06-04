@@ -7,5 +7,6 @@ public interface Value {
     RefValue asRefValue();
     ClosureValue asClosureValue();
     ArrayValues asArrayValue();
+    DoubleValue asDoubleValue();
 
 }
