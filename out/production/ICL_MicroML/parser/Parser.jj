@@ -8,7 +8,7 @@ package parser;
 import ast.*;
 import ast.bools.*;
 import ast.declarations.*;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.*;
 import ast.functions.*;
 import ast.arrays.*;
@@ -16,7 +16,6 @@ import symbols.*;
 import types.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Parser {
 
@@ -34,6 +33,8 @@ SKIP :
 
 TOKEN :
 {
+  <DOUBLE: (["0"-"9"])+ "." (["0"-"9"])+ >
+  |
   < Num: (["0"-"9"]) + >
   |
   < PLUS : "+" >
@@ -99,6 +100,8 @@ TOKEN :
   < SARRAY: "sarray" >
   |
   < INT: "int" >
+  |
+  < DOUBLETYPE: "double" >
   |
   < BOOL: "bool" >
   |
@@ -213,6 +216,8 @@ Type Type() :
 {
   <INT> { return IntType.getInstance(); }
   |
+  <DOUBLETYPE> { return DoubleType.getInstance(); }
+  |
   <BOOL> { return BoolType.getInstance(); }
   |
   <UNIT> { return UnitType.getInstance(); }
@@ -325,6 +330,11 @@ Exp Fact() :
   {
       return new ASTInt(Integer.parseInt(x.image));
   }
+  |
+        x = <DOUBLE>
+    {
+        return new ASTDouble(Double.parseDouble(x.image));
+    }
   |
       <MINUS> e = Fact()
   {

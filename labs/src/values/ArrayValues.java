@@ -44,4 +44,8 @@ public class ArrayValues implements Value{
 
     @Override
     public ArrayValues asArrayValue() { return this;}
+    @Override
+    public DoubleValue asDoubleValue() {
+        throw new IllegalStateException("Not a DoubleValue");
+    }
 }

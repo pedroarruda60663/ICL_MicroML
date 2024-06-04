@@ -10,7 +10,7 @@ import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
 import ast.functions.ASTFunCall;
 import ast.functions.ASTFunDef;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
@@ -30,29 +30,57 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTAdd e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new IntValue(n1.getValue() + n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		if (v1 instanceof IntValue && v2 instanceof IntValue) {
+			return new IntValue(v1.asIntValue().getValue() + v2.asIntValue().getValue());
+		} else {
+			double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+			double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+			return new DoubleValue(d1 + d2);
+		}
 	}
 
 	@Override
 	public Value visit(ASTMult e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new IntValue(n1.getValue() * n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		if (v1 instanceof IntValue && v2 instanceof IntValue) {
+			return new IntValue(v1.asIntValue().getValue() * v2.asIntValue().getValue());
+		} else {
+			double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+			double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+			return new DoubleValue(d1 * d2);
+		}
 	}
 	@Override
 	public Value visit(ASTDiv e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new IntValue(n1.getValue() / n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		if (v1 instanceof IntValue && v2 instanceof IntValue) {
+			return new IntValue(v1.asIntValue().getValue() / v2.asIntValue().getValue());
+		} else {
+			double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+			double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+			return new DoubleValue(d1 / d2);
+		}
 	}
 
 	@Override
 	public Value visit(ASTSub e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new IntValue(n1.getValue() - n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		if (v1 instanceof IntValue && v2 instanceof IntValue) {
+			return new IntValue(v1.asIntValue().getValue() - v2.asIntValue().getValue());
+		} else {
+			double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+			double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+			return new DoubleValue(d1 - d2);
+		}
 	}
 
 	@Override
@@ -77,16 +105,24 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTLess e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() < n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+		double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+
+		return new BoolValue(d1 < d2);
 	}
 
 	@Override
 	public Value visit(ASTGreater e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() > n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+		double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+
+		return new BoolValue(d1 > d2);
 	}
 
 	@Override
@@ -96,8 +132,14 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 		if (v1 instanceof IntValue && v2 instanceof IntValue) {
 			return new BoolValue(((IntValue) v1).getValue() == ((IntValue) v2).getValue());
-		} else {
+		} else if (v1 instanceof DoubleValue && v2 instanceof DoubleValue) {
+			return new BoolValue(((DoubleValue) v1).getValue() == ((DoubleValue) v2).getValue());
+		} else if (v1 instanceof BoolValue && v2 instanceof BoolValue) {
 			return new BoolValue(((BoolValue) v1).getValue() == ((BoolValue) v2).getValue());
+		} else if (v1 instanceof IntValue && v2 instanceof DoubleValue) {
+			return new BoolValue(((IntValue) v1).getValue() == ((DoubleValue) v2).getValue());
+		} else {
+			return new BoolValue(((DoubleValue) v1).getValue() == ((IntValue) v2).getValue());
 		}
 	}
 
@@ -108,23 +150,37 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 		if (v1 instanceof IntValue && v2 instanceof IntValue) {
 			return new BoolValue(((IntValue) v1).getValue() != ((IntValue) v2).getValue());
-		} else {
+		} else if (v1 instanceof DoubleValue && v2 instanceof DoubleValue) {
+			return new BoolValue(((DoubleValue) v1).getValue() != ((DoubleValue) v2).getValue());
+		} else if (v1 instanceof BoolValue && v2 instanceof BoolValue) {
 			return new BoolValue(((BoolValue) v1).getValue() != ((BoolValue) v2).getValue());
+		} else if (v1 instanceof IntValue && v2 instanceof DoubleValue) {
+			return new BoolValue(((IntValue) v1).getValue() != ((DoubleValue) v2).getValue());
+		} else {
+			return new BoolValue(((DoubleValue) v1).getValue() != ((IntValue) v2).getValue());
 		}
 	}
 
 	@Override
 	public Value visit(ASTLessEq e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() <= n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+		double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+
+		return new BoolValue(d1 <= d2);
 	}
 
 	@Override
 	public Value visit(ASTGreaterEq e, Env<Value> env) throws TypingException {
-		IntValue n1 = e.arg1.accept(this, env).asIntValue();
-		IntValue n2 = e.arg2.accept(this, env).asIntValue();
-		return new BoolValue(n1.getValue() >= n2.getValue());
+		Value v1 = e.arg1.accept(this, env);
+		Value v2 = e.arg2.accept(this, env);
+
+		double d1 = v1 instanceof IntValue ? v1.asIntValue().getValue() : v1.asDoubleValue().getValue();
+		double d2 = v2 instanceof IntValue ? v2.asIntValue().getValue() : v2.asDoubleValue().getValue();
+
+		return new BoolValue(d1 >= d2);
 	}
 
 	@Override
@@ -272,6 +328,10 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		return array.getValueAt(index);
 	}
 
+	@Override
+	public Value visit(ASTDouble e, Env<Value> env) throws TypingException {
+		return new DoubleValue(e.value);
+	}
 
 	public static Value interpret(Exp e) throws TypingException {
 		Interpreter i = new Interpreter();

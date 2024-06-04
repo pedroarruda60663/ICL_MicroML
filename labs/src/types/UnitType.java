@@ -30,6 +30,11 @@ public class UnitType implements Type {
     }
 
     @Override
+    public boolean isDoubleType() {
+        return false;
+    }
+
+    @Override
     public boolean isIntType() {
         return false;
     }

@@ -39,6 +39,11 @@ public class RefType implements Type {
         return false;
     }
 
+    @Override
+    public boolean isDoubleType() {
+        return false;
+    }
+
 
     @Override
     public String toString() {

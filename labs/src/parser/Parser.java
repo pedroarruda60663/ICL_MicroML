@@ -4,7 +4,7 @@ package parser;
 import ast.*;
 import ast.bools.*;
 import ast.declarations.*;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.*;
 import ast.functions.*;
 import ast.arrays.*;
@@ -12,7 +12,6 @@ import symbols.*;
 import types.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Parser implements ParserConstants {
 
@@ -63,6 +62,7 @@ varDecls.add(varDecl);
 {if ("" != null) return new ASTLet(varDecls, e);}
       break;
       }
+    case DOUBLE:
     case Num:
     case MINUS:
     case LPAR:
@@ -191,6 +191,11 @@ params.add(new Pair<>(id.image, type));
 {if ("" != null) return IntType.getInstance();}
       break;
       }
+    case DOUBLETYPE:{
+      jj_consume_token(DOUBLETYPE);
+{if ("" != null) return DoubleType.getInstance();}
+      break;
+      }
     case BOOL:{
       jj_consume_token(BOOL);
 {if ("" != null) return BoolType.getInstance();}
@@ -308,6 +313,7 @@ e1 = new ASTAssign(e1, e2);
 
   final public Exp BExp() throws ParseException {Exp e1, e2;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case DOUBLE:
     case Num:
     case MINUS:
     case LPAR:
@@ -535,6 +541,7 @@ e1 = new ASTDiv(e1,e2);
     jj_consume_token(LPAR);
 e1 = new ASTFunCall(exp);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case DOUBLE:
     case Num:
     case MINUS:
     case LPAR:
@@ -579,6 +586,11 @@ e1.addArg(e2);
     case Num:{
       x = jj_consume_token(Num);
 {if ("" != null) return new ASTInt(Integer.parseInt(x.image));}
+      break;
+      }
+    case DOUBLE:{
+      x = jj_consume_token(DOUBLE);
+{if ("" != null) return new ASTDouble(Double.parseDouble(x.image));}
       break;
       }
     case MINUS:{
@@ -641,6 +653,7 @@ e1.addArg(e2);
 {if ("" != null) return new ASTUnit();}
       break;
       }
+    case DOUBLE:
     case Num:
     case MINUS:
     case LPAR:
@@ -688,10 +701,10 @@ e1.addArg(e2);
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x8000000,0x0,0x3135c250,0x40000000,0x40000000,0x200,0x800000,0x80000,0x0,0x0,0x2014c250,0x0,0x0,0x60,0x60,0x180,0x180,0x200,0x40000000,0x2014c250,0x14c250,0x3135c650,};
+	   jj_la1_0 = new int[] {0x10000000,0x0,0x626b84b0,0x80000000,0x80000000,0x400,0x1000000,0x100000,0x0,0x0,0x402984b0,0x0,0x0,0xc0,0xc0,0x300,0x300,0x400,0x80000000,0x402984b0,0x2984b0,0x626b8cb0,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x100,0x90e,0x0,0x0,0xf0,0x0,0x0,0xe00,0xe00,0x902,0x6f000,0x6f000,0x0,0x0,0x0,0x0,0x0,0x0,0x902,0x900,0x90e,};
+	   jj_la1_1 = new int[] {0x0,0x400,0x241c,0x0,0x0,0x3e0,0x0,0x0,0x3800,0x3800,0x2404,0x1bc000,0x1bc000,0x0,0x0,0x0,0x0,0x0,0x0,0x2404,0x2400,0x241c,};
 	}
 
   /** Constructor with InputStream. */
@@ -816,7 +829,7 @@ e1.addArg(e2);
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[51];
+	 boolean[] la1tokens = new boolean[53];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -833,7 +846,7 @@ e1.addArg(e2);
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 51; i++) {
+	 for (int i = 0; i < 53; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

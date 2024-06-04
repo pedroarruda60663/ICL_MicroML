@@ -17,10 +17,20 @@ import ast.declarations.ASTLet;
 import ast.declarations.ASTVarDecl;
 import ast.functions.ASTFunCall;
 import ast.functions.ASTFunDef;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
+import instructions.arrays.ArrayLoad;
+import instructions.arrays.ArrayStore;
+import instructions.arrays.NewArray;
+import instructions.compare.*;
+import instructions.doubles.*;
+import instructions.ints.*;
+import instructions.invoke_field.GetField;
+import instructions.invoke_field.InvokeSpecial;
+import instructions.invoke_field.InvokeVirtual;
+import instructions.invoke_field.PutField;
 import symbols.CompEnv;
 import symbols.Env;
 import instructions.*;
@@ -30,8 +40,8 @@ import types.*;
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
-	static BlockSeq block = new BlockSeq();
-	private static Set<Pair<String, String>> refTypes = new HashSet<>();
+	BlockSeq block = new BlockSeq();
+	private Set<Pair<String, String>> refTypes = new HashSet<>();
 
 	@Override
 	public Void visit(ASTInt i, Env<Void> env) {
@@ -41,33 +51,25 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTAdd e, Env<Void> env) throws TypingException {
-	    e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-		block.addInstruction(new IAdd());
+		handleArithmeticOperation(e.arg1, e.arg2, new IAdd(), new DAdd(), env);
 	    return null;
 	}
 
 	@Override
 	public Void visit(ASTMult e, Env<Void> env) throws TypingException {
-	    e.arg1.accept(this, env);
-	    e.arg2.accept(this, env);
-	    block.addInstruction(new IMul());
+		handleArithmeticOperation(e.arg1, e.arg2, new IMul(), new DMul(), env);
 		return null;
 	}
 
 
 	public Void visit(ASTDiv e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-		block.addInstruction(new IDiv());
+		handleArithmeticOperation(e.arg1, e.arg2, new IDiv(), new DDiv(), env);
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTSub e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-		block.addInstruction(new ISub());
+		handleArithmeticOperation(e.arg1, e.arg2, new ISub(), new DSub(), env);
 		return null;
 	}
 
@@ -104,122 +106,94 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTLess e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new ILess(trueLabel));
-
-		// If comparison is false, push 0 (false) and jump to endLabel
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		// Label location where comparison is true
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1)); // Push 1 (true) on stack
-
-		// End label location to resume normal execution
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIfLt(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new ILess(new Label()));
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTGreater e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new IGreater(trueLabel));
-
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1));
-
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIfGt(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new IGreater(new Label()));
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTEquals e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new IEquals(trueLabel));
-
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1));
-
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIf(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new IEquals(new Label()));
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTNotEquals e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new INotEquals(trueLabel));
-
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1));
-
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIfNe(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new INotEquals(new Label()));
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTLessEq e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new ILessEq(trueLabel));
-
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1));
-
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIfLe(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new ILessEq(new Label()));
+		}
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTGreaterEq e, Env<Void> env) throws TypingException {
-		e.arg1.accept(this, env);
-		e.arg2.accept(this, env);
-
-		Label trueLabel = new Label();
-		Label endLabel = new Label();
-		block.addInstruction(new IGreaterEq(trueLabel));
-
-		block.addInstruction(new SIPush(0));
-		block.addInstruction(new Goto(endLabel));
-
-		block.addLabel(trueLabel);
-		block.addInstruction(new SIPush(1));
-
-		block.addLabel(endLabel);
+		if (e.arg1.getType().isDoubleType() || e.arg2.getType().isDoubleType()) {
+			handleDoubles(e.arg1, e.arg2, new DCmpg(), env);
+			handleComparisons(new IIfGe(new Label()));
+		}
+		else
+		{
+			e.arg1.accept(this, env);
+			e.arg2.accept(this, env);
+			handleComparisons(new IGreaterEq(new Label()));
+		}
 		return null;
 	}
 
-	//TODO ask if the case where it returns unit is well handled
 	@Override
 	public Void visit(ASTIf e, Env<Void> env) throws TypingException {
 		Label trueLabel = new Label();
@@ -232,10 +206,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 		e.ifBody.accept(this, env);
 
-		//dar pop para dar return a unit no caso em que nao ha else
-		if (e.elseBody == null) {
-			block.addInstruction(new Pop());
-		} else {
+		if (e.elseBody != null) {
 			//else branch (if exists)
 			block.addInstruction(new Goto(endLabel));
 			block.addLabel(trueLabel);
@@ -258,8 +229,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(new IIf(endLabel));
 		e.body.accept(this, env);
 
-		//dar pop para dar return a unit
-		block.addInstruction(new Pop());
 		//jump back to the start to re-evaluate the condition
 		block.addInstruction(new Goto(startLabel));
 
@@ -366,9 +335,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
 		e.print.accept(this, env);
-		block.addInstruction(new Dup());
-		block.addInstruction(new GetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
-		block.addInstruction(new Swap());
+		/*if (e.print.getType().isDoubleType()) {
+			block.addInstruction(new InvokeStatic("java/lang/String valueOf (D)Ljava/lang/String;"));
+			block.addInstruction(new Ldc("%.2f"));
+			block.addInstruction(new Invokestatic("java/lang/String", "format", "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/String;"));
+		}*/
 		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(" + getTypeDescriptor(e.type) + ")V"));
 		return null;
 	}
@@ -376,7 +347,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTSeq e, Env<Void> env) throws TypingException {
 		e.first.accept(this, env);
-		block.addInstruction(new Pop());
 		e.second.accept(this, env);
 		return null;
 	}
@@ -415,6 +385,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		return null;
 	}
 
+	@Override
+	public Void visit(ASTDouble e, Env<Void> env) throws TypingException {
+		block.addInstruction(new Ldc2w(e.value));
+		return null;
+	}
 
 	public static BasicBlock codeGen(Exp e) throws TypingException, FileNotFoundException {
 		CodeGen cg = new CodeGen();
@@ -422,7 +397,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.accept(cg, globalEnv);
 
 
-		for(Pair<String, String> pair : refTypes){
+		for(Pair<String, String> pair : cg.refTypes){
 			writeFrameToFile(createRefString(pair.first, pair.second), pair.first +".j");
 		}
 		for (Frame frame : cg.block.frames){
@@ -444,7 +419,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 					  .end method
 					  .method public static main([Ljava/lang/String;)V
 					   .limit locals 10
-					   .limit stack 256					          
+					   .limit stack 256	
+					   getstatic java/lang/System/out Ljava/io/PrintStream;				          
 				   """;
 		String footer = 
 				"""
@@ -465,11 +441,53 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	    out.close();
 	}
 
+	private void handleComparisons(Instruction op) throws TypingException {
+		Label trueLabel = new Label();
+		Label endLabel = new Label();
+		op.args = new String[]{trueLabel.toString()};
+		block.addInstruction(op);
+		block.addInstruction(new SIPush(0));
+		block.addInstruction(new Goto(endLabel));
+		block.addLabel(trueLabel);
+		block.addInstruction(new SIPush(1));
+		block.addLabel(endLabel);
+	}
+
+	private void handleArithmeticOperation(Exp arg1, Exp arg2, Instruction intOp, Instruction doubleOp, Env<Void> env) throws TypingException {
+		if (arg1.getType().isDoubleType() || arg2.getType().isDoubleType()) {
+			handleDoubles(arg1, arg2, doubleOp, env);
+		} else {
+			arg1.accept(this, env);
+			arg2.accept(this, env);
+			block.addInstruction(intOp);
+		}
+	}
+
+	private void handleDoubles(Exp arg1, Exp arg2, Instruction doubleOp, Env<Void> env) throws TypingException {
+		if (!arg1.getType().isDoubleType()) {
+			arg1.accept(this, env);
+			block.addInstruction(new I2D());
+			arg2.accept(this, env);
+		}
+		if (!arg2.getType().isDoubleType()) {
+			arg1.accept(this, env);
+			arg2.accept(this, env);
+			block.addInstruction(new I2D());
+		}
+		if (arg1.getType().isDoubleType() && arg2.getType().isDoubleType()) {
+			arg1.accept(this, env);
+			arg2.accept(this, env);
+		}
+		block.addInstruction(doubleOp);
+	}
+
 	private String getTypeDescriptor(Type t) {
 		if (t instanceof BoolType) {
 			return "Z";
 		} else if (t instanceof IntType) {
 			return "I";
+		} else if (t instanceof DoubleType) {
+			return "D";
 		} else if (t instanceof RefType) {
 			RefType innerType = (RefType) t;
 			return "L" + innerType.toString() + ";";

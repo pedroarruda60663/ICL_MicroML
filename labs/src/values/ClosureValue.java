@@ -44,6 +44,11 @@ public class ClosureValue implements Value {
     public ArrayValues asArrayValue() {throw new IllegalStateException("Not a ArrayValues");}
 
     @Override
+    public DoubleValue asDoubleValue() {
+        throw new IllegalStateException("Not a DoubleValue");
+    }
+
+    @Override
     public String toString() {
         return "function with " + params.size() + " arguments";
     }

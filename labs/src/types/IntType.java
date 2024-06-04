@@ -40,6 +40,11 @@ public class IntType implements Type {
 	}
 
 	@Override
+	public boolean isDoubleType() {
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		return "int";
 	}

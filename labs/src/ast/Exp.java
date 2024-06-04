@@ -9,14 +9,12 @@ import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
 import ast.functions.ASTFunCall;
 import ast.functions.ASTFunDef;
-import ast.ints.*;
+import ast.nums.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
 import types.Type;
 import types.TypingException;
-
-import java.io.FileNotFoundException;
 
 public interface Exp {
 	public interface Visitor<T, E> {
@@ -50,6 +48,7 @@ public interface Exp {
 		public T visit(ASTNewArray e, E env) throws TypingException;
 		public T visit(ASTArrayAssign e, E env) throws TypingException;
 		public T visit(ASTArrayAccess e, E env) throws TypingException;
+		public T visit(ASTDouble e, E env) throws TypingException;
 	}
 	public Type getType();
 	public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException;
