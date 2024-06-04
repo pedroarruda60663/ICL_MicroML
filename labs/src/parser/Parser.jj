@@ -94,6 +94,12 @@ TOKEN :
   |
   <ARRAY: "array" >
   |
+  < GARRAY: "garray" >
+  |
+  < SARRAY: "sarray" >
+  //|
+  //< TYPE: "int" | "bool" | "unit" >
+  |
   < INT: "int" >
   |
   < BOOL: "bool" >
@@ -101,6 +107,8 @@ TOKEN :
   < UNIT: "unit" >
   |
   < REF: "ref">
+ // |
+  //<FUNTYPE: (<TYPE>)* <ARROW> <TYPE> >
   |
   < Id: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"] )* >
 }
@@ -127,6 +135,7 @@ TOKEN :
   |
   < NOTEQUALS: "!=" >
 }
+
 
 Exp Start() :
 { Exp e; }
@@ -163,13 +172,13 @@ Exp Decl() :
 Exp ArrayAccess() :
 { Exp e1, e2; }
 {
-    e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
+    <GARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> { return new ASTArrayAccess(e1, e2); }
 }
 
 Exp ArrayAssign() :
 { Exp e1, e2, e3; }
 {
-    e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQUALS> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
+    <SARRAY> e1 = Fact() <SLPAR> e2 = BExp() <SRPAR> <EQUALS> e3 = BExp() { return new ASTArrayAssign(e1, e2, e3); }
 }
 
 Exp ArrayDec() :
@@ -177,6 +186,8 @@ Exp ArrayDec() :
 {
     <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
 }
+
+
 
 Exp FunDef() :
 {
@@ -283,8 +294,8 @@ Exp Expr() :
 { Exp e1, e2; }
 {
    e1 = Term()
-     ( LOOKAHEAD(2) <PLUS> e2 = Term() { e1 = new ASTAdd(e1,e2); }
-     | LOOKAHEAD(2) <MINUS> e2 = Term() { e1 = new ASTSub(e1,e2); } )*
+     ( <PLUS> e2 = Term() { e1 = new ASTAdd(e1,e2); }
+     | <MINUS> e2 = Term() { e1 = new ASTSub(e1,e2); } )*
      { return e1; }
 }
 
@@ -292,8 +303,8 @@ Exp Term() :
 { Exp e1, e2; }
 {
      e1 = fcall()
-     ( LOOKAHEAD(2) <TIMES> e2 = fcall() { e1 = new ASTMult(e1,e2); }
-     | LOOKAHEAD(2) <DIV> e2 = fcall() { e1 = new ASTDiv(e1,e2); } )*
+     ( <TIMES> e2 = fcall() { e1 = new ASTMult(e1,e2); }
+     | <DIV> e2 = fcall() { e1 = new ASTDiv(e1,e2); } )*
      { return e1; }
 }
 
@@ -321,7 +332,7 @@ Exp Fact() :
       return new ASTInt(Integer.parseInt(x.image));
   }
   |
-      LOOKAHEAD(2) <MINUS> e = Fact()
+      <MINUS> e = Fact()
   {
       return new ASTMult(new ASTInt(-1), e);
   }
@@ -348,3 +359,6 @@ Exp Par():
   |
       e = Decl() <RPAR> { return e;}
 }
+
+
+
