@@ -394,8 +394,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTNewArray e, Env<Void> env) throws TypingException {
 		e.size.accept(this, env);
-		String elementType = getTypeDescriptor(new IntType());
-		block.addInstruction(new NewArray(elementType));
+		block.addInstruction(new NewArray("int"));
 		return null;
 	}
 
@@ -474,6 +473,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		} else if (t instanceof RefType) {
 			RefType innerType = (RefType) t;
 			return "L" + innerType.toString() + ";";
+		} else if (t instanceof ArrayType) {
+			return "[I";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}

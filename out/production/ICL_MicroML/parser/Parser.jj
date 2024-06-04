@@ -158,7 +158,7 @@ Exp Decl() :
 }
 
 Exp ArrayDec() :
-{ Token x; Exp e; Token type; Exp size;}
+{ Token type; Exp size;}
 {
     <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
 }

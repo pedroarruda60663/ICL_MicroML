@@ -82,6 +82,8 @@ public class BlockSeq {
         } else if (t instanceof RefType) {
             RefType innerType = (RefType) t;
             return "L" + innerType.toString() + ";";
+        } else if (t instanceof ArrayType) {
+            return "[I";
         }
         throw new IllegalArgumentException("Unsupported type: " + t);
     }

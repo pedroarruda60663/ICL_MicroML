@@ -1,9 +1,6 @@
 package compiler;
 
-import types.BoolType;
-import types.IntType;
-import types.RefType;
-import types.Type;
+import types.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -51,6 +48,8 @@ public class Frame {
         } else if (t instanceof RefType) {
             RefType innerType = (RefType) t;
             return "L" + innerType.toString() + ";";
+        } else if (t instanceof ArrayType) {
+            return "[I";
         }
         throw new IllegalArgumentException("Unsupported type: " + t);
     }
