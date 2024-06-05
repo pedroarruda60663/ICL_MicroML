@@ -19,17 +19,20 @@ putfield frame_0/sl Ljava/lang/Object;
 astore 0
 aload 0
 sipush 5
-newarray byte
-putfield frame_0/loc_0 [B
+newarray int
+putfield frame_0/loc_0 [I
 aload 0
-getfield frame_0/loc_0 [B
+getfield frame_0/loc_0 [I
 sipush 2
-sipush 1
-bastore
+sipush 3
+iastore
 aload 0
-getfield frame_0/loc_0 [B
+getfield frame_0/loc_0 [I
 sipush 2
-baload
+iaload
+i2d
+ldc2_w 3.2
+dadd
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0

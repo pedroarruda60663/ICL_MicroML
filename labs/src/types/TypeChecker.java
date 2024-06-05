@@ -377,7 +377,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         if (!valueType.toString().equals(elementType.toString())) {
             throw new TypingException("Array assignment type mismatch");
         }
-
+        e.type = valueType;
         return valueType;
     }
 
@@ -393,6 +393,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
             throw new TypingException("Array index must be an integer");
         }
 
+        e.type = array.getElementType();
         return array.getElementType();
     }
 
