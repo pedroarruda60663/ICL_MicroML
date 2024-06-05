@@ -372,7 +372,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		else {
 			throw new TypingException("Unsupported array type: " + e.elementType);
 		}
-
 		return null;
 	}
 
@@ -489,7 +488,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(doubleOp);
 	}
 
-	private String getTypeDescriptor(Type t) {
+	public static String getTypeDescriptor(Type t) {
 		if (t instanceof BoolType) {
 			return "Z";
 		} else if (t instanceof IntType) {
@@ -500,10 +499,12 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			RefType innerType = (RefType) t;
 			return "L" + innerType.toString() + ";";
 		} else if (t instanceof ArrayType) {
-			return "[I";
+			Type innerType = ((ArrayType) t).elementType;
+			return "[" + getTypeDescriptor(innerType);
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}
+
 
 	private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
 		PrintStream out = new PrintStream(new FileOutputStream(frameName));

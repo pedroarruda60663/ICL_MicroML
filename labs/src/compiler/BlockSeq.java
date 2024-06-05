@@ -67,25 +67,11 @@ public class BlockSeq {
             block.addInstruction(new GetField("frame_" + i + "/sl Lframe_" + (i - 1) + ";"));
         }
 
-        block.addInstruction(new GetField("frame_" + (currFrame.id - depth) + "/loc_" + fieldIndex + " " + getTypeDescriptor(t)));
+        block.addInstruction(new GetField("frame_" + (currFrame.id - depth) + "/loc_" + fieldIndex + " " + CodeGen.getTypeDescriptor(t)));
     }
 
     public void addLabel(Label label) {
         block.addLabel(label);
-    }
-
-    private String getTypeDescriptor(Type t) {
-        if (t instanceof BoolType) {
-            return "Z";
-        } else if (t instanceof IntType) {
-            return "I";
-        } else if (t instanceof RefType) {
-            RefType innerType = (RefType) t;
-            return "L" + innerType.toString() + ";";
-        } else if (t instanceof ArrayType) {
-            return "[I";
-        }
-        throw new IllegalArgumentException("Unsupported type: " + t);
     }
 
     private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {

@@ -1,7 +1,7 @@
 package types;
 
 public class ArrayType implements Type {
-    private Type elementType;
+    public Type elementType;
 
     public ArrayType(Type elementType) {
         this.elementType = elementType;
