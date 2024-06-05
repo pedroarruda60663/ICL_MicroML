@@ -1,7 +1,7 @@
 package types;
 
 public class BoolType implements Type {
-    private BoolType() {}
+    BoolType() {}
     private static BoolType instance = new BoolType();
 
     public static BoolType getInstance() {

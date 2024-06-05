@@ -351,8 +351,12 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTNewArray e, Env<Type> env) throws TypingException {
         Type sizeType = e.size.accept(this, env);
         ensureIntType(sizeType);
-        e.type = new ArrayType(new IntType());
-
+        if(e.elementType.equals("int"))
+            e.type = new ArrayType(new IntType());
+        else if(e.elementType.equals("bool"))
+            e.type = new ArrayType(new BoolType());
+        else
+            throw new TypingException("Invalid array type: " + e.elementType);
         return e.type;
     }
 
@@ -370,11 +374,9 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
         Type valueType = e.newValue.accept(this, env);
         Type elementType = array.getElementType();
-        //System.out.println("cena:" + valueType+"?");
-        //System.out.println("cena2:" + elementType+"?");
-        //if (!valueType.equals(elementType)) {
-        //    throw new TypingException("Array assignment type mismatch");
-        //}
+        if (!valueType.toString().equals(elementType.toString())) {
+            throw new TypingException("Array assignment type mismatch");
+        }
 
         return valueType;
     }

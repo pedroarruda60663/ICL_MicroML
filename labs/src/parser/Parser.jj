@@ -183,7 +183,7 @@ Exp ArrayAssign() :
 Exp ArrayDec() :
 { Token type; Exp size;}
 {
-    <ARRAY> type = <INT> size = Fact() { return new ASTNewArray(type.image, size);}
+    <ARRAY> (type = <INT> | type = <BOOL>) size = Fact() { return new ASTNewArray(type.image, size);}
 }
 
 Exp FunDef() :

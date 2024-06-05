@@ -24,14 +24,7 @@ aload 0
 getfield frame_0/loc_0 [I
 sipush 1
 sipush 2
-iastore
-pop
-aload 0
-getfield frame_0/loc_0 [I
-sipush 1
-iaload
-sipush 2
-iadd
+astore
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0

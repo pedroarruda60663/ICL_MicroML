@@ -300,11 +300,17 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 
 	@Override
 	public Value visit(ASTNewArray e, Env<Value> env) throws TypingException {
-		//only works for int arrays
 		int size = e.size.accept(this, env).asIntValue().getValue();
 		Value[] values = new Value[size];
-		for (int i = 0; i < size; i++) {
-			values[i] = new IntValue(0);
+		if(e.elementType.equals("int")) {
+			for (int i = 0; i < size; i++) {
+				values[i] = new IntValue(0);
+			}
+		}
+		else if (e.elementType.equals("bool")) {
+			for (int i = 0; i < size; i++) {
+				values[i] = new BoolValue(false);
+			}
 		}
 		return new ArrayValues(values);
 	}
@@ -314,7 +320,16 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 		ArrayValues array = e.array.accept(this, env).asArrayValue();
 		int index = e.index.accept(this, env).asIntValue().getValue();
 		Value newValue = e.newValue.accept(this, env);
-		array.setValueAt(index, newValue);
+		Value oldValue = array.getValueAt(index);
+
+		if(oldValue instanceof IntValue && newValue instanceof IntValue) {
+			array.setValueAt(index, newValue);
+			return newValue;
+		}
+		else if(oldValue instanceof BoolValue && newValue instanceof BoolValue) {
+			array.setValueAt(index, newValue);
+			return newValue;
+		}
 		return newValue;
 	}
 

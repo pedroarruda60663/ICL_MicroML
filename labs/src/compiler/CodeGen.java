@@ -364,7 +364,15 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTNewArray e, Env<Void> env) throws TypingException {
 		e.size.accept(this, env);
-		block.addInstruction(new NewArray("int"));
+		if(e.elementType.equals("int")) {
+			block.addInstruction(new NewArray("int"));
+		} else if (e.elementType.equals("bool")){
+			block.addInstruction(new NewArray("bool"));
+		}
+		else {
+			throw new TypingException("Unsupported array type: " + e.elementType);
+		}
+
 		return null;
 	}
 

@@ -5,7 +5,7 @@ import instructions.Instruction;
 public class ArrayStore extends Instruction {
 
     public ArrayStore() {
-        op = "iastore";
+        op = "aastore";
         args = null;
     }
 }
