@@ -8,7 +8,8 @@
 .method public static main([Ljava/lang/String;)V
  .limit locals 10
  .limit stack 256
-L0:
+ getstatic java/lang/System/out Ljava/io/PrintStream;
+L2:
 new frame_0
 dup
 invokespecial frame_0/<init>()V
@@ -18,13 +19,13 @@ putfield frame_0/sl Ljava/lang/Object;
 astore 0
 aload 0
 sipush 5
-newarray int
+newarray bool
 putfield frame_0/loc_0 [I
 aload 0
 getfield frame_0/loc_0 [I
-sipush 1
 sipush 2
-astore
+sipush 1
+aastore
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0
