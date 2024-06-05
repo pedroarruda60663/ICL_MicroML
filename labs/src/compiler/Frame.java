@@ -20,7 +20,6 @@ public class Frame {
 
     public void addField(Type type) {
         types.add(type);
-        System.out.println(type);
         //nFields++;
     }
 

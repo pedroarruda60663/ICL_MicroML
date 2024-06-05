@@ -9,7 +9,7 @@
  .limit locals 10
  .limit stack 256
  getstatic java/lang/System/out Ljava/io/PrintStream;
-L0:
+L1:
 new frame_0
 dup
 invokespecial frame_0/<init>()V
@@ -19,13 +19,17 @@ putfield frame_0/sl Ljava/lang/Object;
 astore 0
 aload 0
 sipush 5
-newarray bool
-putfield frame_0/loc_0 [Z
+newarray byte
+putfield frame_0/loc_0 [B
 aload 0
-getfield frame_0/loc_0 [I
+getfield frame_0/loc_0 [B
 sipush 2
 sipush 1
-aastore
+bastore
+aload 0
+getfield frame_0/loc_0 [B
+sipush 2
+baload
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0

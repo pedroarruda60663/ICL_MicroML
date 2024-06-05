@@ -21,9 +21,7 @@ import ast.nums.*;
 import ast.references.ASTAssign;
 import ast.references.ASTDeref;
 import ast.references.ASTNew;
-import instructions.arrays.ArrayLoad;
-import instructions.arrays.ArrayStore;
-import instructions.arrays.NewArray;
+import instructions.arrays.*;
 import instructions.compare.*;
 import instructions.doubles.*;
 import instructions.ints.*;
@@ -367,10 +365,10 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		if(e.elementType.equals("int")) {
 			block.addInstruction(new NewArray("int"));
 		} else if (e.elementType.equals("bool")){
-			block.addInstruction(new NewArray("bool"));
+			block.addInstruction(new NewArray("byte"));
 		}
 		else {
-			throw new TypingException("Unsupported array type: " + e.elementType);
+			throw new TypingException("Unsupported array type : " + e.elementType);
 		}
 		return null;
 	}
@@ -380,7 +378,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.array.accept(this, env);
 		e.index.accept(this, env);
 		e.newValue.accept(this, env);
-		block.addInstruction(new ArrayStore());
+		if(((ArrayType) e.array.getType()).elementType instanceof IntType){
+			block.addInstruction(new ArrayStoreInt());
+		} else if(((ArrayType) e.array.getType()).elementType instanceof BoolType){
+			block.addInstruction(new ArrayStoreBool());
+		}
+		else {
+			throw new TypingException("Unsupported array type: " + e.array.getType());
+		}
 		return null;
 	}
 
@@ -388,7 +393,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTArrayAccess e, Env<Void> env) throws TypingException {
 		e.array.accept(this, env);
 		e.index.accept(this, env);
-		block.addInstruction(new ArrayLoad());
+		if(((ArrayType) e.array.getType()).elementType instanceof IntType){
+			block.addInstruction(new ArrayLoadInt());
+		} else if(((ArrayType) e.array.getType()).elementType instanceof BoolType){
+			block.addInstruction(new ArrayLoadBool());
+		}
+		else {
+			throw new TypingException("Unsupported array type:" + e.array.getType());
+		}
 		return null;
 	}
 
@@ -500,7 +512,16 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			return "L" + innerType.toString() + ";";
 		} else if (t instanceof ArrayType) {
 			Type innerType = ((ArrayType) t).elementType;
-			return "[" + getTypeDescriptor(innerType);
+			return "[" + getArrayTypeDescriptor(innerType);
+		}
+		throw new IllegalArgumentException("Unsupported type: " + t);
+	}
+
+	public static String getArrayTypeDescriptor(Type t){
+		if (t instanceof BoolType) {
+			return "B";
+		} else if (t instanceof IntType) {
+			return "I";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}
