@@ -1,0 +1,5 @@
+L1:
+aload 0
+getfield frame_0/loc_0 I
+sipush 2
+imul

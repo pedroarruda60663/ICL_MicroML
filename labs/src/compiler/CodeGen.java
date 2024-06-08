@@ -303,6 +303,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTId e, Env<Void> env) throws TypingException {
+		System.out.println("aqui2");
 		block.fetch(e.id, e.type);
 		return null;
 	}
@@ -382,15 +383,32 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTFunDef e, Env<Void> env) throws TypingException {
 		FunType t = (FunType) e.type;
 		ClosureComp closure = block.addClosure(t, e.body, e.params);
-		List<Type> types = new ArrayList<Type>(t.arguments);
+		List<Type> types = new ArrayList<>(t.arguments);
 		types.add(t.resultType);
 		funTypes.add(new Pair<>(t.toString(), types));
+		block.addInstruction(new New("closure_" + closure.id));
+		block.addInstruction(new Dup());
+		block.addInstruction(new ALoad(0));
+		block.addInstruction(new PutField("closure_" + closure.id + "/sl Ljava/lang/Object;"));
+		closure.endScope();
 
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTFunCall e, Env<Void> env) throws TypingException {
+		block.addInstruction(new CheckCast("fun_" + e.id.getType()));
+		for(Exp param : e.params){
+			param.accept(this, env);
+		}
+
+		StringBuilder types = new StringBuilder();
+		for (int i = 0; i < e.params.size(); i++){
+			types.append(getTypeDescriptor(e.params.get(i).getType()));
+		}
+		types.append(")").append(getTypeDescriptor(e.type)).append(" ").append(e.params.size() + 1);
+		block.addInstruction(new InvokeInterface("fun_" + e.id.getType() + "/apply(" + types));
+		//invokeinterface fun_(int_int)/apply(I)I 2
 		return null;
 	}
 
@@ -413,15 +431,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		Env<Void> globalEnv = new Env<>();
 		e.accept(cg, globalEnv);
 
-
 		for(Pair<String, String> pair : cg.refTypes){
 			writeJasminFile(createRefString(pair.first, pair.second), pair.first +".j");
 		}
 		for(Pair<String, List<Type>> closureInterface : cg.funTypes){
-			writeJasminFile(createFunInterface(closureInterface.first, closureInterface.second), "fun_" + closureInterface.first + ".j");
+			writeJasminFile(createFunInterface("fun_" + closureInterface.first, closureInterface.second), "fun_" + closureInterface.first + ".j");
 		}
 		for(ClosureComp closure : cg.block.closures){
-			writeJasminFile(closure.toString(cg), "closure_" + closure.id + ".j");
+			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
 		}
 		for (Frame frame : cg.block.frames){
 			writeJasminFile(frame.toString(), "frame_" + frame.id + ".j");

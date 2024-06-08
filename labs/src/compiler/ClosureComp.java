@@ -9,6 +9,7 @@ import types.FunType;
 import types.Type;
 import types.TypingException;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 public class ClosureComp {
@@ -18,6 +19,8 @@ public class ClosureComp {
     int id;
     Exp body;
     Pair<Frame, CompEnv> frame;
+    CodeGen cg;
+    Env<Void> globalEnv;
 
     public ClosureComp(List<Pair<String, Type>> params, int id, FunType type, Exp body, Pair<Frame, CompEnv> frame){
         this.params = params;
@@ -29,9 +32,17 @@ public class ClosureComp {
         {
             frame.first.addField(argType);
         }
+        cg = new CodeGen();
+        cg.block.currFrame = this.frame.first;
+        cg.block.env = this.frame.second;
+        globalEnv = new Env<>();
     }
 
-    public String toString(Exp.Visitor<Void, Env<Void>> v) {
+    public void endScope() {
+        cg.block.endScope(frame.first, frame.second);
+    }
+
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(".class public closure_").append(id).append("\n");
         sb.append(".super java/lang/Object\n");
@@ -44,15 +55,16 @@ public class ClosureComp {
         sb.append(".end method\n\n");
 
         try {
-            sb.append(createApply(v));
-        } catch (TypingException e) {
+            sb.append(createApply());
+        } catch (TypingException | FileNotFoundException e) {
+            System.out.println("aqui");
             throw new RuntimeException(e);
         }
 
         return sb.toString();
     }
 
-    private String createApply(Exp.Visitor<Void, Env<Void>> v) throws TypingException {
+    private String createApply() throws TypingException, FileNotFoundException {
         StringBuilder sb = new StringBuilder();
 
         sb.append(".method public apply(");
@@ -60,7 +72,7 @@ public class ClosureComp {
             sb.append(CodeGen.getTypeDescriptor(type.arguments.get(i)));
         }
         sb.append(")").append(CodeGen.getTypeDescriptor(type.resultType)).append("\n");
-        sb.append(".limit locals ").append(frame.first.nFields+2).append("\n");
+        sb.append(".limit locals ").append(frame.first.nFields+5).append("\n");
         String frameName = "frame_" + frame.first.id;
         sb.append(new New(frameName)).append("\n");
         sb.append(new Dup()).append("\n");
@@ -78,7 +90,8 @@ public class ClosureComp {
             i++;
         }
         sb.append(new AStore(0)).append("\n");
-        body.accept(v, null);
+        body.accept(cg, globalEnv);
+        sb.append(cg.block.block.build());
 
         sb.append("return\n");
         sb.append(".end method");

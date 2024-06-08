@@ -1,6 +1,6 @@
 .class public closure_0
 .super java/lang/Object
-.implements fun_(int_int_int)
+.implements fun_int_bool_int
 .field public sl Ljava/lang/Object;
 
 .method public <init>()V
@@ -9,19 +9,26 @@ invokenonvirtual java/lang/Object/<init>()V
 return
 .end method
 
-.method public apply(II)I
+.method public apply(IZ)I
 .limit locals 4
-new frame_0
+.limit stack 256
+new frame_1
 dup
-invokespecial frame_0/<init>()V
+invokespecial frame_1/<init>()V
 dup
 aload 0
 getfield closure_0/sl Ljava/lang/Object;
-putfield frame_0/sl Ljava/lang/Object;
+putfield frame_1/sl Ljava/lang/Object;
 dup
 aload 1
-putfield frame_0/loc_0 I
+putfield frame_1/loc_0 I
 aload 2
-putfield frame_0/loc_1 I
+putfield frame_1/loc_1 Z
 astore 0
-return.end method
+L5:
+aload 0
+getfield frame_1/loc_0 I
+sipush 2
+imul
+return
+.end method
