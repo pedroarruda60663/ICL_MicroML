@@ -303,7 +303,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTId e, Env<Void> env) throws TypingException {
-		System.out.println("aqui2");
 		block.fetch(e.id, e.type);
 		return null;
 	}
@@ -388,15 +387,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		funTypes.add(new Pair<>(t.toString(), types));
 		block.addInstruction(new New("closure_" + closure.id));
 		block.addInstruction(new Dup());
+		block.addInstruction(new InvokeSpecial("closure_" + closure.id + "/<init>()V"));
+		block.addInstruction(new Dup());
 		block.addInstruction(new ALoad(0));
-		block.addInstruction(new PutField("closure_" + closure.id + "/sl Ljava/lang/Object;"));
-		closure.endScope();
+		block.addInstruction(new PutField("closure_" + closure.id + "/sl L" + (closure.frame.first.prev == null ? "java/lang/Object;" : "frame_" + closure.frame.first.prev.id) + ";"));
+		//closure.endScope();
 
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTFunCall e, Env<Void> env) throws TypingException {
+		e.id.accept(this, env);
 		block.addInstruction(new CheckCast("fun_" + e.id.getType()));
 		for(Exp param : e.params){
 			param.accept(this, env);
@@ -408,7 +410,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		}
 		types.append(")").append(getTypeDescriptor(e.type)).append(" ").append(e.params.size() + 1);
 		block.addInstruction(new InvokeInterface("fun_" + e.id.getType() + "/apply(" + types));
-		//invokeinterface fun_(int_int)/apply(I)I 2
 		return null;
 	}
 
@@ -488,7 +489,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		} else if (t instanceof RefType innerType) {
 			return "L" + innerType + ";";
 		} else if (t instanceof FunType funType) {
-			return "Ljava/lang/Object;";
+			return "Lfun_" + funType + ";";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}

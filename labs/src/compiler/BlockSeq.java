@@ -45,7 +45,7 @@ public class BlockSeq {
 
     public ClosureComp addClosure(FunType t, Exp body, List<Pair<String, Type>> params){
         Pair<Frame, CompEnv> pair = this.beginScope(t.arguments.size());
-        ClosureComp closure = new ClosureComp(params, closures.size(), t, body, pair);
+        ClosureComp closure = new ClosureComp(params, closures.size(), t, body, pair, frames);
         closures.add(closure);
         endScope(pair.first, pair.second);
         return closure;
@@ -74,7 +74,7 @@ public class BlockSeq {
         for (int i = currFrame.id; i > currFrame.id - depth; i--) {
             block.addInstruction(new GetField("frame_" + i + "/sl Lframe_" + (i - 1) + ";"));
         }
-
+        System.out.println("id: " + id + " type: " + t + " currFrame: " + currFrame.id + " size: " + frames.size());
         block.addInstruction(new GetField("frame_" + (currFrame.id - depth) + "/loc_" + fieldIndex + " " + CodeGen.getTypeDescriptor(t)));
     }
 

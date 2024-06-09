@@ -39,12 +39,10 @@ public class FunType implements Type {
     @Override
     public String toString() {
         StringBuilder argumentsString = new StringBuilder();
-        argumentsString.append("(");
         for (Type t : arguments){
             argumentsString.append(t).append("_");
         }
         argumentsString.append(resultType);
-        argumentsString.append(")");
         return argumentsString.toString();
     }
 

@@ -22,7 +22,7 @@ public class ClosureComp {
     CodeGen cg;
     Env<Void> globalEnv;
 
-    public ClosureComp(List<Pair<String, Type>> params, int id, FunType type, Exp body, Pair<Frame, CompEnv> frame){
+    public ClosureComp(List<Pair<String, Type>> params, int id, FunType type, Exp body, Pair<Frame, CompEnv> frame, List<Frame> frames){
         this.params = params;
         this.id = id;
         this.type = type;
@@ -36,6 +36,7 @@ public class ClosureComp {
         cg.block.currFrame = this.frame.first;
         cg.block.env = this.frame.second;
         globalEnv = new Env<>();
+        cg.block.frames = frames;
     }
 
     public void endScope() {
@@ -47,7 +48,7 @@ public class ClosureComp {
         sb.append(".class public closure_").append(id).append("\n");
         sb.append(".super java/lang/Object\n");
         sb.append(".implements fun_").append(type).append("\n");
-        sb.append(".field public sl Ljava/lang/Object;\n\n");
+        sb.append(".field public sl L").append(frame.first.prev == null ? "java/lang/Object;" : "frame_" + frame.first.prev.id).append(";").append("\n");
         sb.append(".method public <init>()V").append("\n");
         sb.append("aload_0").append("\n");
         sb.append("invokenonvirtual java/lang/Object/<init>()V").append("\n");
@@ -72,15 +73,16 @@ public class ClosureComp {
             sb.append(CodeGen.getTypeDescriptor(type.arguments.get(i)));
         }
         sb.append(")").append(CodeGen.getTypeDescriptor(type.resultType)).append("\n");
-        sb.append(".limit locals ").append(frame.first.nFields+5).append("\n");
+        sb.append(".limit locals ").append(frame.first.nFields+3).append("\n");
+        sb.append(".limit stack ").append(frame.first.nFields+4);
         String frameName = "frame_" + frame.first.id;
         sb.append(new New(frameName)).append("\n");
         sb.append(new Dup()).append("\n");
         sb.append(new InvokeSpecial(frameName + "/<init>()V")).append("\n");
         sb.append(new Dup()).append("\n");
         sb.append(new ALoad(0)).append("\n");
-        sb.append(new GetField("closure_"+ id + "/sl L" +"java/lang/Object;")).append("\n");//+ (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
-        sb.append(new PutField(frameName + "/sl L" +"java/lang/Object;")).append("\n");//+ (f.prev == null ? "java/lang/Object" : "frame_" + f.prev.id) + ";"));
+        sb.append(new GetField("closure_"+ id + "/sl L" + (frame.first.prev == null ? "java/lang/Object;" : "frame_" + frame.first.prev.id) + ";")).append("\n");
+        sb.append(new PutField(frameName + "/sl L" + (frame.first.prev == null ? "java/lang/Object;" : "frame_" + frame.first.prev.id) + ";")).append("\n");
         sb.append(new Dup()).append("\n");
         int i = 1;
         for (Pair<String, Type> t : params){
