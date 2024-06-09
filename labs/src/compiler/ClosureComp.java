@@ -2,12 +2,13 @@ package compiler;
 
 import ast.Exp;
 import instructions.*;
+import instructions.invoke_field.GetField;
+import instructions.invoke_field.InvokeSpecial;
+import instructions.invoke_field.PutField;
 import symbols.CompEnv;
 import symbols.Env;
 import symbols.Pair;
-import types.FunType;
-import types.Type;
-import types.TypingException;
+import types.*;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -58,7 +59,6 @@ public class ClosureComp {
         try {
             sb.append(createApply());
         } catch (TypingException | FileNotFoundException e) {
-            System.out.println("aqui");
             throw new RuntimeException(e);
         }
 
@@ -70,11 +70,13 @@ public class ClosureComp {
 
         sb.append(".method public apply(");
         for (int i = 0; i < type.arguments.size(); i++){
-            sb.append(CodeGen.getTypeDescriptor(type.arguments.get(i)));
+            if(!(type.arguments.get(i) instanceof UnitType)) {
+                sb.append(CodeGen.getTypeDescriptor(type.arguments.get(i)));
+            }
         }
         sb.append(")").append(CodeGen.getTypeDescriptor(type.resultType)).append("\n");
         sb.append(".limit locals ").append(frame.first.nFields+3).append("\n");
-        sb.append(".limit stack ").append(frame.first.nFields+4);
+        sb.append(".limit stack ").append(frame.first.nFields+4).append("\n");
         String frameName = "frame_" + frame.first.id;
         sb.append(new New(frameName)).append("\n");
         sb.append(new Dup()).append("\n");
@@ -83,21 +85,63 @@ public class ClosureComp {
         sb.append(new ALoad(0)).append("\n");
         sb.append(new GetField("closure_"+ id + "/sl L" + (frame.first.prev == null ? "java/lang/Object;" : "frame_" + frame.first.prev.id) + ";")).append("\n");
         sb.append(new PutField(frameName + "/sl L" + (frame.first.prev == null ? "java/lang/Object;" : "frame_" + frame.first.prev.id) + ";")).append("\n");
-        sb.append(new Dup()).append("\n");
+
         int i = 1;
+        int arg = 1;
         for (Pair<String, Type> t : params){
-            frame.second.put(t.first, i-1);
-            sb.append(new ALoad(i)).append("\n");
-            sb.append(new PutField(frameName + "/loc_" + (i - 1))).append(" ").append(CodeGen.getTypeDescriptor(t.second)).append("\n");
+                frame.second.put(t.first, i-1);
+            if(!(t.second instanceof UnitType)) {
+                sb.append(new Dup()).append("\n");
+                sb.append(getFunctionArgInstructions(t.second, arg)).append("\n");
+                sb.append(new PutField(frameName + "/loc_" + (i - 1))).append(" ").append(CodeGen.getTypeDescriptor(t.second)).append("\n");
+                arg++;
+            }
             i++;
         }
+
         sb.append(new AStore(0)).append("\n");
         body.accept(cg, globalEnv);
         sb.append(cg.block.block.build());
 
-        sb.append("return\n");
+        sb.append(getFunctionReturn(type.resultType)).append("\n");
         sb.append(".end method");
         return sb.toString();
+    }
+
+    private Instruction getFunctionArgInstructions(Type t, int position){
+        if (t instanceof BoolType) {
+            return new ILoad(position);
+        } else if (t instanceof IntType) {
+            return new ILoad(position);
+        } else if (t instanceof DoubleType) {
+            return new DLoad(position);
+        } else if (t instanceof RefType) {
+            return new ALoad(position);
+        } else if (t instanceof ArrayType) {
+            return new ALoad(position);
+        } else if (t instanceof FunType) {
+            return new ALoad(position);
+        }
+        throw new IllegalArgumentException("Unsupported type: " + t);
+    }
+
+    private String getFunctionReturn(Type t){
+        if (t instanceof BoolType) {
+            return "ireturn";
+        } else if (t instanceof IntType) {
+            return "ireturn";
+        } else if (t instanceof DoubleType) {
+            return "dreturn";
+        } else if (t instanceof RefType) {
+            return "areturn";
+        } else if (t instanceof ArrayType) {
+            return "areturn";
+        } else if (t instanceof FunType) {
+            return "areturn";
+        } else if (t instanceof UnitType) {
+            return "return";
+        }
+        throw new IllegalArgumentException("Unsupported type: " + t);
     }
 
 }

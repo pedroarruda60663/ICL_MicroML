@@ -2,7 +2,6 @@
 .super java/lang/Object
 
 .field public sl Lframe_0;
-.field public loc_0 I
 .field public loc_1 Z
 .method public <init>()V
 aload_0

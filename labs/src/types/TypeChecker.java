@@ -293,7 +293,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
         if (printType.isRefType() || printType.isFunType()) {
             throw new TypingException("Can not print this type of expression.");
         }
-        e.type = printType;
+        e.type = UnitType.getInstance();
         return UnitType.getInstance();
     }
 

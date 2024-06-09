@@ -9,7 +9,6 @@
  .limit locals 10
  .limit stack 256
 L0:
-
 new frame_0
 dup
 invokespecial frame_0/<init>()V
@@ -24,13 +23,12 @@ invokespecial closure_0/<init>()V
 dup
 aload 0
 putfield closure_0/sl Lframe_0;
-putfield frame_0/loc_0 Lfun_int_bool_int;
+putfield frame_0/loc_0 Lfun_unit_bool_unit;
 aload 0
-getfield frame_0/loc_0 Lfun_int_bool_int;
-checkcast fun_int_bool_int
-sipush 5
+getfield frame_0/loc_0 Lfun_unit_bool_unit;
+checkcast fun_unit_bool_unit
 sipush 1
-invokeinterface fun_int_bool_int/apply(IZ)I 3
+invokeinterface fun_unit_bool_unit/apply(Z)V 2
 aload 0
 getfield frame_0/sl Ljava/lang/Object;
 astore 0

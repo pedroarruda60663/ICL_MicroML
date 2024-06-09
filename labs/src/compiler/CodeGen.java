@@ -33,7 +33,6 @@ import instructions.compare.*;
 import instructions.invoke_field.*;
 import symbols.Pair;
 import types.*;
-import values.ClosureValue;
 
 
 public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
@@ -204,6 +203,9 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.addInstruction(new IIf(e.elseBody != null ? trueLabel : endLabel));
 
 		e.ifBody.accept(this, env);
+		if(!(e.ifBody.getType() instanceof UnitType)){
+			block.addInstruction(new Pop());
+		}
 
 		if (e.elseBody != null) {
 			//else branch (if exists)
@@ -227,13 +229,16 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		//if the condition is false, jump out of the loop
 		block.addInstruction(new IIf(endLabel));
 		e.body.accept(this, env);
+		if(!(e.body.getType() instanceof UnitType)){
+			block.addInstruction(new Pop());
+		}
 
 		//jump back to the start to re-evaluate the condition
 		block.addInstruction(new Goto(startLabel));
-		block.addLabel(endLabel);
 
-		//dar pop quando o que fica no stack não é unit
+		block.addLabel(endLabel);
 		return null;
+
 	}
 
 	@Override
@@ -254,13 +259,16 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 		int loc = 0;
 		for (ASTVarDecl b : e.varDecls) {
-			f.addField(b.type);
- 			block.addInstruction(new ALoad(0));
-			 b.exp.accept(this, env);
-			 block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
-			//block.addInstruction(new AStore(0));
-			newEnv.put(b.id, loc);
-			loc++;
+			if(!(b.type instanceof UnitType)) {
+
+				block.addInstruction(new ALoad(0));
+				b.exp.accept(this, env);
+				block.addInstruction(new PutField(frameName + "/loc_" + loc + " " + getTypeDescriptor(b.type)));
+				//block.addInstruction(new AStore(0));
+			}
+				f.addField(b.type);
+				newEnv.put(b.id, loc);
+				loc++;
 		}
 		e.body.accept(this, null);
 		block.endScope(f,newEnv);
@@ -281,6 +289,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.reference.accept(this, env);
 		e.newValue.accept(this, env);
 		block.addInstruction(new PutField("ref_" + e.type.toString() + "/value " + getTypeDescriptor(e.type)));
+		e.newValue.accept(this, env);
 		return null;
 	}
 
@@ -331,15 +340,18 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 
 	@Override
 	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
+		block.addInstruction(new GetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
 		e.print.accept(this, env);
-		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(" + getTypeDescriptor(e.type) + ")V"));
+		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(" + getTypeDescriptor(e.print.getType()) + ")V"));
 		return null;
 	}
 
 	@Override
 	public Void visit(ASTSeq e, Env<Void> env) throws TypingException {
 		e.first.accept(this, env);
-		//dar pop quando o first não é unit
+		if(!(e.first.getType() instanceof UnitType)){
+			block.addInstruction(new Pop());
+		}
 		e.second.accept(this, env);
 		return null;
 	}
@@ -370,11 +382,19 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			param.accept(this, env);
 		}
 
+		int nArgs = 1;
 		StringBuilder types = new StringBuilder();
 		for (int i = 0; i < e.params.size(); i++){
-			types.append(getTypeDescriptor(e.params.get(i).getType()));
+			if (!(e.params.get(i).getType() instanceof UnitType)) {
+				if (e.params.get(i).getType() instanceof DoubleType) {
+					nArgs += 2;
+				} else {
+					nArgs++;
+				}
+				types.append(getTypeDescriptor(e.params.get(i).getType()));
+			}
 		}
-		types.append(")").append(getTypeDescriptor(e.type)).append(" ").append(e.params.size() + 1);
+		types.append(")").append(getTypeDescriptor(e.type)).append(" ").append(nArgs);
 		block.addInstruction(new InvokeInterface("fun_" + e.id.getType() + "/apply(" + types));
 		return null;
 	}
@@ -384,8 +404,11 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		sb.append(".interface public ").append(name).append("\n");
 		sb.append(".super java/lang/Object").append("\n\n");
 		sb.append(".method public abstract apply(");
+
 		for (int i = 0; i < types.size()-1; i++){
-			sb.append(getTypeDescriptor(types.get(i)));
+			if (!(types.get(i) instanceof UnitType)) {
+				sb.append(getTypeDescriptor(types.get(i)));
+			}
 		}
 		sb.append(")").append(getTypeDescriptor(types.get(types.size()-1))).append("\n");
 		sb.append(".end method");
@@ -477,9 +500,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 					  .method public static main([Ljava/lang/String;)V
 					   .limit locals 10
 					   .limit stack 256	
-					   getstatic java/lang/System/out Ljava/io/PrintStream;				          
 				   """;
-		String footer = 
+		String footer =
 				"""
 				return
 				.end method
@@ -488,7 +510,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		block.build(sb);
 		sb.append(footer);
 		return sb;
-			
 	}
 	
 	public static void writeToFile(Exp e, String filename) throws FileNotFoundException, TypingException {
@@ -504,7 +525,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		out.close();
 	}
 
-	private void handleComparisons(Instruction op) throws TypingException {
+	private void handleComparisons(Instruction op) {
 		Label trueLabel = new Label();
 		Label endLabel = new Label();
 		op.args = new String[]{trueLabel.toString()};
@@ -559,6 +580,8 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			return "[" + getArrayTypeDescriptor(innerType);
 		} else if (t instanceof FunType funType) {
 				return "Lfun_" + funType + ";";
+		} else if (t instanceof UnitType) {
+			return "V";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
 	}
@@ -570,13 +593,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			return "I";
 		}
 		throw new IllegalArgumentException("Unsupported type: " + t);
-	}
-
-
-	private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
-		PrintStream out = new PrintStream(new FileOutputStream(frameName));
-		out.print(frame);
-		out.close();
 	}
 
 }

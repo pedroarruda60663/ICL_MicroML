@@ -30,7 +30,9 @@ public class Frame {
         sb.append(".super java/lang/Object\n").append("\n");
         sb.append(".field public sl L").append(prev == null ? "java/lang/Object" : "frame_" + prev.id).append(";\n");
         for (int i = 0; i < nFields; i++) {
-            sb.append(".field public loc_").append(i).append(" ").append(CodeGen.getTypeDescriptor(types.get(i))).append("\n");
+            if (!(types.get(i) instanceof UnitType)) {
+                sb.append(".field public loc_").append(i).append(" ").append(CodeGen.getTypeDescriptor(types.get(i))).append("\n");
+            }
         }
         sb.append(".method public <init>()V").append("\n");
         sb.append("aload_0").append("\n");
