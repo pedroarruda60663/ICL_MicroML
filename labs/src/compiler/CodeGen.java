@@ -10,7 +10,9 @@ import java.util.Set;
 
 
 import ast.*;
-import ast.arrays.*;
+import ast.arrays.ASTArrayAccess;
+import ast.arrays.ASTArrayAssign;
+import ast.arrays.ASTNewArray;
 import ast.bools.*;
 import ast.declarations.ASTId;
 import ast.declarations.ASTLet;
@@ -396,10 +398,10 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		if(e.elementType.equals("int")) {
 			block.addInstruction(new NewArray("int"));
 		} else if (e.elementType.equals("bool")){
-			block.addInstruction(new NewArray("bool"));
+			block.addInstruction(new NewArray("byte"));
 		}
 		else {
-			throw new TypingException("Unsupported array type: " + e.elementType);
+			throw new TypingException("Unsupported array type : " + e.elementType);
 		}
 		return null;
 	}
@@ -409,7 +411,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 		e.array.accept(this, env);
 		e.index.accept(this, env);
 		e.newValue.accept(this, env);
-		block.addInstruction(new ArrayStore());
+		if(((ArrayType) e.array.getType()).elementType instanceof IntType){
+			block.addInstruction(new ArrayStoreInt());
+		} else if(((ArrayType) e.array.getType()).elementType instanceof BoolType){
+			block.addInstruction(new ArrayStoreBool());
+		}
+		else {
+			throw new TypingException("Unsupported array type: " + e.array.getType());
+		}
 		return null;
 	}
 
@@ -417,7 +426,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	public Void visit(ASTArrayAccess e, Env<Void> env) throws TypingException {
 		e.array.accept(this, env);
 		e.index.accept(this, env);
-		block.addInstruction(new ArrayLoad());
+		if(((ArrayType) e.array.getType()).elementType instanceof IntType){
+			block.addInstruction(new ArrayLoadInt());
+		} else if(((ArrayType) e.array.getType()).elementType instanceof BoolType){
+			block.addInstruction(new ArrayLoadBool());
+		}
+		else {
+			throw new TypingException("Unsupported array type:" + e.array.getType());
+		}
 		return null;
 	}
 
@@ -482,26 +498,6 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	    out.close();
 	}
 
-	public static String getTypeDescriptor(Type t) {
-		if (t instanceof BoolType) {
-			return "Z";
-		} else if (t instanceof IntType) {
-			return "I";
-		} else if (t instanceof DoubleType) {
-			return "D";
-		} else if (t instanceof RefType) {
-			RefType innerType = (RefType) t;
-			return "L" + innerType.toString() + ";";
-		} else if (t instanceof ArrayType) {
-			Type innerType = ((ArrayType) t).elementType;
-			return "[" + getTypeDescriptor(innerType);
-		} else if (t instanceof FunType funType) {
-			return "Lfun_" + funType + ";";
-		}
-		throw new IllegalArgumentException("Unsupported type: " + t);
-	}
-
-
 	private static void writeJasminFile(String content, String fileName) throws FileNotFoundException {
 		PrintStream out = new PrintStream(new FileOutputStream(fileName));
 		out.print(content);
@@ -546,6 +542,41 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			arg2.accept(this, env);
 		}
 		block.addInstruction(doubleOp);
+	}
+
+	public static String getTypeDescriptor(Type t) {
+		if (t instanceof BoolType) {
+			return "Z";
+		} else if (t instanceof IntType) {
+			return "I";
+		} else if (t instanceof DoubleType) {
+			return "D";
+		} else if (t instanceof RefType) {
+			RefType innerType = (RefType) t;
+			return "L" + innerType.toString() + ";";
+		} else if (t instanceof ArrayType) {
+			Type innerType = ((ArrayType) t).elementType;
+			return "[" + getArrayTypeDescriptor(innerType);
+		} else if (t instanceof FunType funType) {
+				return "Lfun_" + funType + ";";
+		}
+		throw new IllegalArgumentException("Unsupported type: " + t);
+	}
+
+	public static String getArrayTypeDescriptor(Type t){
+		if (t instanceof BoolType) {
+			return "B";
+		} else if (t instanceof IntType) {
+			return "I";
+		}
+		throw new IllegalArgumentException("Unsupported type: " + t);
+	}
+
+
+	private static void writeFrameToFile(String frame, String frameName) throws FileNotFoundException {
+		PrintStream out = new PrintStream(new FileOutputStream(frameName));
+		out.print(frame);
+		out.close();
 	}
 
 }
