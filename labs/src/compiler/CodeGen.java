@@ -442,7 +442,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 			writeJasminFile(closure.toString(), "closure_" + closure.id + ".j");
 		}
 		for (Frame frame : cg.block.frames){
-			writeFrameToFile(frame.toString(), "frame_" + frame.id + ".j");
+			writeJasminFile(frame.toString(), "frame_" + frame.id + ".j");
 		}
 
 		return cg.block.block;
