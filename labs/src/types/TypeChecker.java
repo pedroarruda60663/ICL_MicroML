@@ -290,6 +290,9 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     @Override
     public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
         Type printType = e.print.accept(this, env);
+        if (printType.isRefType() || printType.isFunType()) {
+            throw new TypingException("Can not print this type of expression.");
+        }
         e.type = printType;
         return UnitType.getInstance();
     }
@@ -316,8 +319,9 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
 
         Type body = e.body.accept(this, newEnv);
         newEnv.endScope();
-
-        return new FunType(paramTypes, body);
+        FunType funType = new FunType(paramTypes, body);
+        e.type = funType;
+        return funType;
     }
 
     @Override
@@ -343,7 +347,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
                 throw new TypingException("Argument type mismatch: expected " + paramType + " but found " + argType);
             }
         }
-
+        e.type = funType.resultType;
         return funType.resultType;
     }
 

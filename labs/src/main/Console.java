@@ -21,7 +21,7 @@ public class Console {
 		while (true) {
 			try {
 				Exp e = parser.Start();
-				TypeChecker.typeCheck(e);
+				System.out.println(TypeChecker.typeCheck(e));
 				CodeGen.writeToFile(e, "myFile.j");
 				System.out.println("Parse OK!" );
 			 	//Interpreter.interpret(e);

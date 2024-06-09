@@ -1,5 +1,6 @@
 package compiler;
 
+import ast.Exp;
 import instructions.ALoad;
 import instructions.invoke_field.GetField;
 import instructions.Instruction;
@@ -16,18 +17,17 @@ import java.util.List;
 
 public class BlockSeq {
 
-    private static final Type BOOLEAN = BoolType.getInstance();
-    private static final Type INT = IntType.getInstance();
-
     List<Frame> frames;
     Frame currFrame;
     BasicBlock block;
     CompEnv env;
+    List<ClosureComp> closures;
 
     public BlockSeq() {
         this.frames = new ArrayList<>();
         this.block = new BasicBlock();
         env = new CompEnv(null);
+        this.closures = new ArrayList<>();
     }
 
     public Pair<Frame, CompEnv> beginScope(int nFields) {
@@ -41,6 +41,14 @@ public class BlockSeq {
     public void advanceToFrame(Frame f, CompEnv e){
         this.currFrame = f;
         this.env = e;
+    }
+
+    public ClosureComp addClosure(FunType t, Exp body, List<Pair<String, Type>> params){
+        Pair<Frame, CompEnv> pair = this.beginScope(t.arguments.size());
+        ClosureComp closure = new ClosureComp(params, closures.size(), t, body, pair, frames);
+        closures.add(closure);
+        endScope(pair.first, pair.second);
+        return closure;
     }
 
     public void endScope(Frame f, CompEnv e) {
