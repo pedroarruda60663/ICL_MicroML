@@ -288,7 +288,7 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     }
 
     @Override
-    public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
+    public Type visit(ASTPrintLn e, Env<Type> env) throws TypingException {
         Type printType = e.print.accept(this, env);
         if (printType.isRefType() || printType.isFunType()) {
             throw new TypingException("Can not print this type of expression.");
@@ -405,6 +405,16 @@ public class TypeChecker implements ast.Exp.Visitor<Type, Env<Type>> {
     public Type visit(ASTDouble e, Env<Type> env) throws TypingException {
         e.type = DoubleType.getInstance();
         return DoubleType.getInstance();
+    }
+
+    @Override
+    public Type visit(ASTPrint e, Env<Type> env) throws TypingException {
+        Type printType = e.print.accept(this, env);
+        if (printType.isRefType() || printType.isFunType()) {
+            throw new TypingException("Can not print this type of expression.");
+        }
+        e.type = UnitType.getInstance();
+        return UnitType.getInstance();
     }
 
     public static Type typeCheck(Exp e) throws TypingException {

@@ -41,7 +41,7 @@ public interface Exp {
 		public T visit(ASTNew e, E env) throws TypingException;
 		public T visit(ASTDeref e, E env) throws TypingException;
 		public T visit(ASTUnit e, E env) throws TypingException;
-		public T visit(ASTPrint e, E env) throws TypingException;
+		public T visit(ASTPrintLn e, E env) throws TypingException;
 		public T visit(ASTSeq e, E env) throws TypingException;
         public T visit(ASTFunDef e, E env) throws TypingException;
 		public T visit(ASTFunCall e, E env) throws TypingException;
@@ -49,6 +49,7 @@ public interface Exp {
 		public T visit(ASTArrayAssign e, E env) throws TypingException;
 		public T visit(ASTArrayAccess e, E env) throws TypingException;
 		public T visit(ASTDouble e, E env) throws TypingException;
+		public T visit(ASTPrint e, E env) throws TypingException;
 	}
 	public Type getType();
 	public <T, E> T accept(Visitor<T, E> v, E env) throws TypingException;

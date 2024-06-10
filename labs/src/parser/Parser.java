@@ -261,7 +261,7 @@ types.add(t);
   final public Exp Print() throws ParseException {Exp e;
     jj_consume_token(PRINT);
     e = Decl();
-{if ("" != null) return new ASTPrint(e);}
+{if ("" != null) return new ASTPrintLn(e);}
     throw new Error("Missing return statement in function");
 }
 

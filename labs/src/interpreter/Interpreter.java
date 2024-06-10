@@ -260,7 +260,7 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	}
 
 	@Override
-	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
+	public Value visit(ASTPrintLn e, Env<Value> env) throws TypingException {
 		Value value = e.print.accept(this, env);
 		System.out.println(value);
 		return UnitValue.getInstance();
@@ -342,6 +342,13 @@ public class Interpreter implements ast.Exp.Visitor<Value, Env<Value>> {
 	@Override
 	public Value visit(ASTDouble e, Env<Value> env) throws TypingException {
 		return new DoubleValue(e.value);
+	}
+
+	@Override
+	public Value visit(ASTPrint e, Env<Value> env) throws TypingException {
+		Value value = e.print.accept(this, env);
+		System.out.print(value);
+		return UnitValue.getInstance();
 	}
 
 	public static Value interpret(Exp e) throws TypingException {

@@ -83,7 +83,9 @@ TOKEN :
   |
   <SEQ: ";" >
   |
-  < PRINT: "print" | "println" >
+  < PRINTLN: "println" >
+  |
+  < PRINT: "print" >
   |
   < FUN: "fun" >
   |
@@ -161,6 +163,8 @@ Exp Decl() :
   |
     e = IfElse() { return e; }
   |
+    e = PrintLn() { return e; }
+  |
     e = Print() { return e; }
   |
     e = ArrayAccess() { return e; }
@@ -225,6 +229,12 @@ Type Type() :
   <REF> t = Type() { return new RefType(t); }
   |
   <LPAR> t = Type() {types.add(t);} (<COMMA> t = Type() {types.add(t);})* <ARROW> t = Type() <RPAR> {return new FunType(types, t);}
+}
+
+Exp PrintLn() :
+{ Exp e;}
+{
+    <PRINTLN> e = Decl() {return new ASTPrintLn(e);}
 }
 
 Exp Print() :

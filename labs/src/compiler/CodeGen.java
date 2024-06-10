@@ -339,7 +339,7 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	}
 
 	@Override
-	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
+	public Void visit(ASTPrintLn e, Env<Void> env) throws TypingException {
 		block.addInstruction(new GetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
 		e.print.accept(this, env);
 		block.addInstruction(new InvokeVirtual("java/io/PrintStream/println(" + getTypeDescriptor(e.print.getType()) + ")V"));
@@ -463,6 +463,14 @@ public class CodeGen implements ast.Exp.Visitor<Void, Env<Void>> {
 	@Override
 	public Void visit(ASTDouble e, Env<Void> env) throws TypingException {
 		block.addInstruction(new Ldc2w(e.value));
+		return null;
+	}
+
+	@Override
+	public Void visit(ASTPrint e, Env<Void> env) throws TypingException {
+		block.addInstruction(new GetStatic("java/lang/System/out", "Ljava/io/PrintStream;"));
+		e.print.accept(this, env);
+		block.addInstruction(new InvokeVirtual("java/io/PrintStream/print(" + getTypeDescriptor(e.print.getType()) + ")V"));
 		return null;
 	}
 
